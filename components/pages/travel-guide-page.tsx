@@ -1,464 +1,585 @@
-// code/components/pages/travel-guide-page.tsx
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
-  ChevronDown,
   Download,
   Plane,
   Pill,
-  Backpack,
-  DollarSign,
-  Navigation,
-  CheckCircle2,
-  Circle,
+  MapPin,
+  Wifi,
+  Utensils,
+  Hotel,
+  Sun,
+  Zap,
+  AlertCircle,
+  Heart,
+  ExternalLink,
+  FileText,
+  ShieldCheck,
+  Wallet,
+  Car,
+  Coffee,
+  Phone,
 } from "lucide-react";
-import jsPDF from "jspdf";
 
-interface TravelItem {
-  id: string;
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5 },
+};
+
+const staggerContainer = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+interface InfoCardProps {
+  icon: React.ElementType;
   title: string;
-  completed: boolean;
+  children: React.ReactNode;
+  delay?: number;
 }
 
-interface Section {
-  id: string;
-  title: string;
-  icon: typeof Plane;
-  items: TravelItem[];
-  description: string;
-}
-
-const INITIAL_SECTIONS: Section[] = [
-  {
-    id: "visa",
-    title: "Visa Requirements",
-    icon: Plane,
-    description: "Essential documentation for entry to Nigeria",
-    items: [
-      {
-        id: "1",
-        title: "Valid passport (6+ months validity)",
-        completed: false,
-      },
-      { id: "2", title: "Nigerian visa application form", completed: false },
-      { id: "3", title: "Passport-sized photographs", completed: false },
-      { id: "4", title: "Proof of accommodation", completed: false },
-      { id: "5", title: "Return flight ticket", completed: false },
-    ],
-  },
-  {
-    id: "health",
-    title: "Health & Vaccinations",
-    icon: Pill,
-    description: "Health precautions and vaccinations recommended",
-    items: [
-      {
-        id: "6",
-        title: "Yellow fever vaccination certificate",
-        completed: false,
-      },
-      { id: "7", title: "Malaria prophylaxis", completed: false },
-      {
-        id: "8",
-        title: "Travel insurance with medical coverage",
-        completed: false,
-      },
-      { id: "9", title: "Prescription medications", completed: false },
-      { id: "10", title: "First aid kit", completed: false },
-    ],
-  },
-  {
-    id: "packing",
-    title: "Packing Essentials",
-    icon: Backpack,
-    description: "What to pack for Lagos climate",
-    items: [
-      { id: "11", title: "Light, breathable clothing", completed: false },
-      { id: "12", title: "Sunscreen and hat", completed: false },
-      { id: "13", title: "Umbrella or rain jacket", completed: false },
-      { id: "14", title: "Comfortable walking shoes", completed: false },
-      { id: "15", title: "Universal power adapter", completed: false },
-      { id: "16", title: "Swimwear and beach essentials", completed: false },
-    ],
-  },
-  {
-    id: "money",
-    title: "Money Matters",
-    icon: DollarSign,
-    description: "Currency and financial tips",
-    items: [
-      { id: "17", title: "Nigerian Naira currency exchange", completed: false },
-      { id: "18", title: "Notify bank of travel dates", completed: false },
-      { id: "19", title: "Carry ATM/credit cards", completed: false },
-      { id: "20", title: "Know exchange rates", completed: false },
-      { id: "21", title: "Budget for taxis and meals", completed: false },
-    ],
-  },
-  {
-    id: "transport",
-    title: "Getting Around Lagos",
-    icon: Navigation,
-    description: "Transportation options in Lagos",
-    items: [
-      {
-        id: "22",
-        title: "Download ride-sharing apps (Uber, Bolt)",
-        completed: false,
-      },
-      { id: "23", title: "Learn about Lagos BRT", completed: false },
-      { id: "24", title: "Book airport transfer", completed: false },
-      { id: "25", title: "Get local SIM card for data", completed: false },
-      {
-        id: "26",
-        title: "Know main locations of conference",
-        completed: false,
-      },
-    ],
-  },
-];
-
-interface ExpandedSectionProps {
-  section: Section;
-  onToggleItem: (sectionId: string, itemId: string) => void;
-}
-
-function ExpandedSection({ section, onToggleItem }: ExpandedSectionProps) {
-  const completedCount = section.items.filter((item) => item.completed).length;
-  const progressPercent = Math.round(
-    (completedCount / section.items.length) * 100
-  );
-
+function InfoCard({ icon: Icon, title, children, delay = 0 }: InfoCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: "auto" }}
-      exit={{ opacity: 0, height: 0 }}
-      transition={{ duration: 0.3 }}
-      className="overflow-hidden"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.5 }}
+      className="bg-card border border-border rounded-xl p-6 hover:border-primary/30 transition-all hover:shadow-lg"
     >
-      <div className="bg-muted/30 p-4 space-y-3">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
-            {completedCount} of {section.items.length} completed
-          </span>
-          <span className="font-semibold text-primary">{progressPercent}%</span>
+      <div className="flex items-start gap-4">
+        <div className="flex-shrink-0 p-3 bg-primary/10 rounded-lg">
+          <Icon className="w-6 h-6 text-primary" />
         </div>
-        <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${progressPercent}%` }}
-            transition={{ duration: 0.5 }}
-            className="h-full bg-primary rounded-full"
-          />
-        </div>
-
-        <div className="space-y-2 mt-4">
-          {section.items.map((item) => (
-            <motion.button
-              key={item.id}
-              onClick={() => onToggleItem(section.id, item.id)}
-              whileTap={{ scale: 0.98 }}
-              className="flex items-center gap-3 w-full text-left p-2 rounded-lg hover:bg-muted/50 transition-colors"
-              data-testid={`travel-item-${item.id}`}
-            >
-              <motion.div
-                animate={{ scale: item.completed ? 1.2 : 1 }}
-                transition={{ duration: 0.2 }}
-                className="flex-shrink-0"
-              >
-                {item.completed ? (
-                  <CheckCircle2 className="w-5 h-5 text-primary" />
-                ) : (
-                  <Circle className="w-5 h-5 text-muted-foreground" />
-                )}
-              </motion.div>
-              <span
-                className={`text-sm flex-1 transition-all ${
-                  item.completed
-                    ? "line-through text-muted-foreground"
-                    : "text-foreground"
-                }`}
-              >
-                {item.title}
-              </span>
-            </motion.button>
-          ))}
+        <div className="flex-1 space-y-3">
+          <h3 className="text-lg font-bold text-foreground">{title}</h3>
+          <div className="text-sm text-muted-foreground leading-relaxed space-y-2">
+            {children}
+          </div>
         </div>
       </div>
+    </motion.div>
+  );
+}
+
+interface AccommodationCardProps {
+  name: string;
+  type: string;
+  distance: string;
+  description: string;
+  link?: string;
+  delay: number;
+}
+
+function AccommodationCard({
+  name,
+  type,
+  distance,
+  description,
+  link,
+  delay,
+}: AccommodationCardProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay, duration: 0.4 }}
+      className="bg-card border border-border rounded-lg p-4 hover:border-primary/40 transition-all group"
+    >
+      <div className="flex items-start justify-between gap-3 mb-2">
+        <div className="flex-1">
+          <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+            {name}
+          </h4>
+          <p className="text-xs text-muted-foreground mt-0.5">{type}</p>
+        </div>
+        {link && (
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-shrink-0 p-1.5 hover:bg-primary/10 rounded-md transition-colors"
+            aria-label={`Visit ${name} website`}
+          >
+            <ExternalLink className="w-4 h-4 text-primary" />
+          </a>
+        )}
+      </div>
+      <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+        <MapPin className="w-3.5 h-3.5" />
+        <span>{distance}</span>
+      </div>
+      <p className="text-sm text-muted-foreground">{description}</p>
     </motion.div>
   );
 }
 
 export default function TravelGuidePage() {
-  const [sections, setSections] = useState<Section[]>(INITIAL_SECTIONS);
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set()
-  );
-
-  const toggleSection = (sectionId: string) => {
-    const newExpanded = new Set(expandedSections);
-    if (newExpanded.has(sectionId)) {
-      newExpanded.delete(sectionId);
-    } else {
-      newExpanded.add(sectionId);
-    }
-    setExpandedSections(newExpanded);
-  };
-
-  const toggleItem = (sectionId: string, itemId: string) => {
-    setSections((prevSections) =>
-      prevSections.map((section) =>
-        section.id === sectionId
-          ? {
-              ...section,
-              items: section.items.map((item) =>
-                item.id === itemId
-                  ? { ...item, completed: !item.completed }
-                  : item
-              ),
-            }
-          : section
-      )
-    );
-  };
-
-  const calculateTotalProgress = () => {
-    const totalItems = sections.reduce(
-      (sum, section) => sum + section.items.length,
-      0
-    );
-    const completedItems = sections.reduce(
-      (sum, section) =>
-        sum + section.items.filter((item) => item.completed).length,
-      0
-    );
-    return totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
-  };
-
-  const exportToPDF = () => {
-    const pdf = new jsPDF();
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    let yPosition = 15;
-
-    // Header
-    pdf.setFontSize(20);
-    pdf.setTextColor(0, 166, 81); // Primary green color
-    pdf.text("ICAIR Conference 2025 - Travel Guide", pageWidth / 2, yPosition, {
-      align: "center",
-    });
-    yPosition += 10;
-
-    // Overall progress
-    pdf.setFontSize(12);
-    pdf.setTextColor(0, 0, 0);
-    pdf.text(
-      `Overall Preparation Progress: ${calculateTotalProgress()}%`,
-      15,
-      yPosition
-    );
-    yPosition += 8;
-
-    // Add line
-    pdf.setDrawColor(200);
-    pdf.line(15, yPosition, pageWidth - 15, yPosition);
-    yPosition += 8;
-
-    // Sections
-    sections.forEach((section) => {
-      const completedCount = section.items.filter(
-        (item) => item.completed
-      ).length;
-      const progressPercent = Math.round(
-        (completedCount / section.items.length) * 100
-      );
-
-      // Check if we need a new page
-      if (yPosition > pageHeight - 30) {
-        pdf.addPage();
-        yPosition = 15;
-      }
-
-      // Section title
-      pdf.setFontSize(14);
-      pdf.setTextColor(0, 166, 81);
-      pdf.text(section.title, 15, yPosition);
-      yPosition += 7;
-
-      // Section progress
-      pdf.setFontSize(10);
-      pdf.setTextColor(80, 80, 80);
-      pdf.text(
-        `Progress: ${completedCount}/${section.items.length} (${progressPercent}%)`,
-        15,
-        yPosition
-      );
-      yPosition += 6;
-
-      // Items
-      pdf.setFontSize(9);
-      section.items.forEach((item) => {
-        const prefix = item.completed ? "[X] " : "[ ] ";
-        const textColor = item.completed ? [150, 150, 150] : [0, 0, 0];
-        pdf.setTextColor(...textColor);
-        const splitText = pdf.splitTextToSize(
-          `${prefix}${item.title}`,
-          pageWidth - 30
-        );
-        pdf.text(splitText, 20, yPosition);
-        yPosition += splitText.length * 4 + 2;
-
-        if (yPosition > pageHeight - 15) {
-          pdf.addPage();
-          yPosition = 15;
-        }
-      });
-
-      yPosition += 3;
-    });
-
-    // Footer
-    pdf.setFontSize(8);
-    pdf.setTextColor(150, 150, 150);
-    pdf.text(
-      `Generated on ${new Date().toLocaleDateString()}`,
-      pageWidth / 2,
-      pageHeight - 10,
-      { align: "center" }
-    );
-
-    pdf.save("ICAIR_Travel_Guide.pdf");
-  };
-
-  const totalProgress = calculateTotalProgress();
-
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="px-4 py-6 sm:px-6 sm:py-8"
-    >
-      {/* Header */}
-      <div className="mb-6">
-        <h2
-          className="text-2xl font-bold mb-2 text-foreground"
-          data-testid="travel-guide-title"
-        >
-          Travel Guide to Lagos
-        </h2>
-        <p className="text-muted-foreground text-sm">
-          Complete your pre-conference checklist for a smooth experience
-        </p>
-      </div>
-
-      {/* Overall Progress Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="bg-gradient-to-r from-primary/10 to-secondary/10 p-4 rounded-lg mb-6 border border-primary/20"
-        data-testid="progress-card"
-      >
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-foreground">Overall Preparation</h3>
-          <span className="text-2xl font-bold text-primary">
-            {totalProgress}%
-          </span>
-        </div>
-        <div className="w-full bg-background rounded-full h-2.5 overflow-hidden">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${totalProgress}%` }}
-            transition={{ duration: 0.6 }}
-            className="h-full bg-primary rounded-full"
-          />
-        </div>
-      </motion.div>
-
-      {/* Export PDF Button */}
-      <motion.button
-        onClick={exportToPDF}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className="w-full mb-6 flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
-        data-testid="export-pdf-btn"
-      >
-        <Download size={18} />
-        Download Travel Guide as PDF
-      </motion.button>
-
-      {/* Sections */}
-      <div className="space-y-3">
-        {sections.map((section, idx) => {
-          const Icon = section.icon;
-          const isExpanded = expandedSections.has(section.id);
-
-          return (
-            <motion.div
-              key={section.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + idx * 0.05 }}
-              className="border border-border rounded-lg overflow-hidden bg-card"
-            >
-              <motion.button
-                onClick={() => toggleSection(section.id)}
-                whileHover={{ backgroundColor: "rgba(0, 166, 81, 0.05)" }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full flex items-center justify-between p-4 transition-colors"
-                data-testid={`section-toggle-${section.id}`}
-              >
-                <div className="flex items-center gap-3 text-left">
-                  <div className="flex-shrink-0 p-2 bg-primary/10 rounded-lg">
-                    <Icon size={20} className="text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground">
-                      {section.title}
-                    </h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {section.description}
-                    </p>
-                  </div>
-                </div>
-                <motion.div
-                  animate={{ rotate: isExpanded ? 180 : 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex-shrink-0"
-                >
-                  <ChevronDown size={20} className="text-muted-foreground" />
-                </motion.div>
-              </motion.button>
-
-              <AnimatePresence>
-                {isExpanded && (
-                  <ExpandedSection
-                    section={section}
-                    onToggleItem={toggleItem}
-                  />
-                )}
-              </AnimatePresence>
-            </motion.div>
-          );
-        })}
-      </div>
-
-      {/* Footer Info */}
+    <div className="px-4 py-6 sm:px-6 sm:py-8 max-w-4xl mx-auto">
+      {/* Hero Section */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="mt-8 pt-6 border-t border-border text-center"
+        transition={{ duration: 0.6 }}
+        className="mb-8"
       >
-        <p className="text-xs text-muted-foreground">
-          Complete all items before your journey to Lagos
-          <br />
-          Safe travels to ICAIR Conference 2025!
-        </p>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-transparent p-8 border border-primary/20">
+          {/* Animated background elements */}
+          <motion.div
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              repeatType: "reverse",
+            }}
+            className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl"
+          />
+          <motion.div
+            animate={{
+              scale: [1.2, 1, 1.2],
+              opacity: [0.2, 0.4, 0.2],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              repeatType: "reverse",
+            }}
+            className="absolute bottom-0 left-0 w-48 h-48 bg-secondary/20 rounded-full blur-3xl"
+          />
+
+          <div className="relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold mb-4"
+            >
+              <Plane className="w-3.5 h-3.5" />
+              November 4–6, 2025
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-3xl sm:text-4xl font-bold text-foreground mb-3"
+            >
+              Welcome to Lagos
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-muted-foreground text-base sm:text-lg leading-relaxed mb-6"
+            >
+              Your guide to the MIRG-ICAIR Conference at University of Lagos
+              Multipurpose Hall, Unilag Akoka. Everything you need for a smooth
+              trip — fast, light, and mobile-first.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="flex flex-wrap gap-3"
+            >
+              <a
+                href="/travel-checklist"
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-lg font-semibold hover:bg-primary/90 transition-colors shadow-md"
+              >
+                <FileText className="w-4 h-4" />
+                Prep Checklist
+              </a>
+              <button
+                onClick={() => {
+                  // PDF download logic
+                  window.print();
+                }}
+                className="inline-flex items-center gap-2 bg-card border border-border text-foreground px-5 py-2.5 rounded-lg font-semibold hover:border-primary/40 hover:bg-primary/5 transition-all"
+              >
+                <Download className="w-4 h-4" />
+                Download Guide
+              </button>
+            </motion.div>
+          </div>
+        </div>
       </motion.div>
-    </motion.div>
+
+      {/* Before You Travel Section */}
+      <motion.section
+        variants={staggerContainer}
+        initial="initial"
+        animate="animate"
+        className="mb-12"
+      >
+        <motion.h2
+          {...fadeInUp}
+          className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2"
+        >
+          <Plane className="w-6 h-6 text-primary" />
+          Before You Travel
+        </motion.h2>
+
+        <div className="space-y-4">
+          <InfoCard icon={Sun} title="Pack for warm, humid weather" delay={0.1}>
+            <p>
+              Lagos in November is typically warm. Think breathable fabrics —
+              cotton and linen are your friends. Comfortable walking shoes are a
+              must (you'll be doing more walking than you think). Bring
+              sunglasses and sunscreen.
+            </p>
+            <p>
+              Pack a light jacket too — conference rooms can get chilly with AC,
+              and evenings sometimes bring a breeze.
+            </p>
+          </InfoCard>
+
+          <InfoCard icon={Zap} title="Electronics & power" delay={0.2}>
+            <p>
+              Bring your chargers and a portable power bank. Most hotels and
+              conference rooms have outlets, but a backup battery is always
+              smart for long conference days.
+            </p>
+            <p>
+              Nigeria uses Type G plugs (same as UK). If you're coming from
+              elsewhere, grab an adapter before you leave.
+            </p>
+          </InfoCard>
+
+          <InfoCard icon={Pill} title="Health & vaccines" delay={0.3}>
+            <p>
+              Nigeria may require a Yellow Fever vaccination certificate
+              depending on where you're coming from. Check with your local
+              Nigerian embassy or consulate for the latest requirements.
+            </p>
+            <p>
+              Bring any prescription meds in their original packaging. Pack a
+              small first-aid kit and some insect repellent — Lagos is tropical,
+              after all.
+            </p>
+          </InfoCard>
+
+          <InfoCard icon={ShieldCheck} title="Travel insurance" delay={0.4}>
+            <div className="flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+              <p>
+                We strongly recommend travel insurance that covers medical
+                emergencies and trip changes. Better safe than sorry.
+              </p>
+            </div>
+          </InfoCard>
+        </div>
+      </motion.section>
+
+      {/* Visas & Flights Section */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="mb-12"
+      >
+        <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+          <Plane className="w-6 h-6 text-primary" />
+          Visas & Flights
+        </h2>
+
+        <div className="space-y-4">
+          <InfoCard icon={Plane} title="Visas">
+            <p>
+              Most visitors need to apply for a Nigerian visa ahead of time,
+              unless you're eligible for Visa-on-Arrival or ECOWAS entry. Don't
+              leave this to the last minute — check with the Nigerian Embassy or
+              consulate in your country well before your trip.
+            </p>
+          </InfoCard>
+
+          <InfoCard icon={MapPin} title="Flights">
+            <p>
+              Lagos's main airport is Murtala Muhammed International Airport
+              (LOS). From there, rideshare apps like Bolt and Uber are the
+              easiest way to reach Yaba/Unilag area.
+            </p>
+            <p>
+              Airport taxis work too, but rideshares tend to be more
+              straightforward and you can see the price upfront.
+            </p>
+          </InfoCard>
+        </div>
+      </motion.section>
+
+      {/* Where to Stay Section */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="mb-12"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+            <Hotel className="w-6 h-6 text-primary" />
+            Where to Stay
+          </h2>
+          <motion.a
+            href="/hotels"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="text-sm text-primary font-semibold hover:underline flex items-center gap-1"
+          >
+            View all hotels
+            <ExternalLink className="w-3.5 h-3.5" />
+          </motion.a>
+        </div>
+
+        <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/20 rounded-xl p-6 mb-6">
+          <div className="flex items-start gap-3">
+            <Heart className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-bold text-foreground mb-2">
+                Our top pick: Unilag Guest House
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                The on-campus guest house is your closest option to the
+                Multipurpose Hall. Choose from Mercury, Executive, or
+                Ambassadorial rooms. See the attached price list for current
+                rates and room photos.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3 mb-4">
+          <p className="text-sm text-muted-foreground font-medium">
+            Other comfortable options (all within ~10 minutes depending on
+            traffic):
+          </p>
+
+          <div className="grid gap-3">
+            <AccommodationCard
+              name="Go2Hotel45"
+              type="Budget to midrange"
+              distance="Alagomeji/Yaba"
+              description="Solid choice for those watching their budget. Clean, comfortable, and well-located."
+              link="https://go2hotel45.com"
+              delay={0.1}
+            />
+
+            <AccommodationCard
+              name="Caritas Inn, Yaba"
+              type="Business-friendly"
+              distance="Central Yaba"
+              description="Convenient Yaba location that caters well to business travelers. Reliable and comfortable."
+              link="https://caritasinnyabahotel.com"
+              delay={0.2}
+            />
+
+            <AccommodationCard
+              name="Mulligan Hotel"
+              type="Mid-tier"
+              distance="Yaba area"
+              description="Established hotel with all the standard amenities you'd expect."
+              link="https://mulligan.lagos-hotels-ng.com"
+              delay={0.3}
+            />
+
+            <AccommodationCard
+              name="Captain Residency Hotel"
+              type="Business hotel"
+              distance="Yaba, short drive to Unilag"
+              description="Another good business option with a short commute to the conference venue."
+              link="https://sembo.co.uk"
+              delay={0.4}
+            />
+          </div>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+          className="bg-muted/30 rounded-lg p-4 flex items-start gap-3"
+        >
+          <AlertCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-muted-foreground">
+            <span className="font-semibold text-foreground">Pro tip:</span> Book
+            early. Lagos traffic and demand can mean limited availability,
+            especially during conference season.
+          </p>
+        </motion.div>
+      </motion.section>
+
+      {/* Getting Around Section */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7 }}
+        className="mb-12"
+      >
+        <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+          <Car className="w-6 h-6 text-primary" />
+          Getting Around
+        </h2>
+
+        <div className="grid gap-4">
+          <div className="bg-card border border-border rounded-lg p-5">
+            <h3 className="font-bold text-foreground mb-3 flex items-center gap-2">
+              <Phone className="w-5 h-5 text-primary" />
+              Best options
+            </h3>
+            <ul className="space-y-3 text-sm text-muted-foreground">
+              <li className="flex items-start gap-2">
+                <span className="flex-shrink-0 w-1.5 h-1.5 bg-primary rounded-full mt-2" />
+                <div>
+                  <span className="font-semibold text-foreground">
+                    Rideshares (Bolt, Uber):
+                  </span>{" "}
+                  Safest and most predictable for conference travel. Download
+                  the apps before you arrive.
+                </div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="flex-shrink-0 w-1.5 h-1.5 bg-primary rounded-full mt-2" />
+                <div>
+                  <span className="font-semibold text-foreground">
+                    Private taxi:
+                  </span>{" "}
+                  Your hotel can arrange this, or book one from the airport.
+                </div>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="flex-shrink-0 w-1.5 h-1.5 bg-primary rounded-full mt-2" />
+                <div>
+                  <span className="font-semibold text-foreground">
+                    BRT / Local buses:
+                  </span>{" "}
+                  More economical but can be slower and less convenient if
+                  you're unfamiliar with the routes.
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9 }}
+            className="bg-muted/30 rounded-lg p-4 flex items-start gap-3"
+          >
+            <AlertCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-muted-foreground">
+              Allow extra time during peak commute hours. Lagos traffic is real
+              — build in buffer time to avoid stress.
+            </p>
+          </motion.div>
+        </div>
+      </motion.section>
+
+      {/* At the Venue Section */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8 }}
+        className="mb-12"
+      >
+        <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+          <MapPin className="w-6 h-6 text-primary" />
+          At the Venue
+        </h2>
+
+        <div className="space-y-4">
+          <div className="bg-card border border-border rounded-xl p-6">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="flex-shrink-0 p-3 bg-primary/10 rounded-lg">
+                <MapPin className="w-6 h-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-foreground mb-2">
+                  Unilag Multipurpose Hall
+                </h3>
+                <p className="text-sm text-muted-foreground mb-1">
+                  (Jelili Adebisi Omotola Hall)
+                </p>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  The conference runs across the main hall and adjacent breakout
+                  rooms on the Unilag campus in Akoka/Yaba. Floor plans are
+                  available on the conference site.
+                </p>
+              </div>
+            </div>
+
+            <div className="border-t border-border pt-4">
+              <h4 className="font-semibold text-foreground mb-3 text-sm">
+                Facilities
+              </h4>
+              <div className="grid gap-3">
+                <div className="flex items-start gap-3">
+                  <Wifi className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm text-foreground font-medium">
+                      Venue Wi-Fi
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Available but can be limited during peak times — save
+                      offline copies of your slides just in case
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <Coffee className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm text-foreground font-medium">
+                      Café & charging
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Charging points and café stalls nearby for breaks
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <ShieldCheck className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm text-foreground font-medium">
+                      Safety & support
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Onsite first aid and security throughout the event
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Footer CTA */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1 }}
+        className="border-t border-border pt-8 pb-4"
+      >
+        <div className="text-center space-y-4">
+          <div className="inline-flex items-center justify-center gap-2 text-primary">
+            <Heart className="w-5 h-5" />
+            <span className="text-sm font-semibold">
+              See you at the conference!
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            Questions or need help? Check out the full schedule, venue map, and
+            more in the app navigation below.
+          </p>
+        </div>
+      </motion.div>
+    </div>
   );
 }

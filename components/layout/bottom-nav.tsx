@@ -23,7 +23,7 @@ const navItems: NavItem[] = [
   { id: "home", label: "Home", icon: Home, href: "/" },
   { id: "schedule", label: "Schedule", icon: Calendar, href: "/schedule" },
   { id: "hotels", label: "Hotels", icon: Hotel, href: "/hotels" },
-  { id: "travel", label: "Travel Guide", icon: Plane, href: "/travel-guide" },
+  { id: "travel", label: "Travel", icon: Plane, href: "/travel-guide" },
   { id: "map", label: "Map", icon: MapPin, href: "/map" },
   { id: "more", label: "More", icon: MoreHorizontal, href: "/more" },
 ];
@@ -71,7 +71,7 @@ export default function BottomNav() {
               <motion.div
                 animate={{
                   scale: active ? 1.15 : 1,
-                  color: active ? "#00A651" : "#64748B",
+                  color: active ? "text-primary" : "text-muted-foreground",
                 }}
                 transition={{ type: "spring", damping: 15, stiffness: 300 }}
                 className="relative z-10"
@@ -86,7 +86,7 @@ export default function BottomNav() {
 
               <motion.span
                 animate={{
-                  color: active ? "#00A651" : "#64748B",
+                  color: active ? "text-primary" : "text-muted-foreground",
                   scale: active ? 1.05 : 1,
                 }}
                 transition={{ type: "spring", damping: 15, stiffness: 300 }}

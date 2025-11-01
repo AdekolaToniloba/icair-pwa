@@ -10,7 +10,7 @@ export default function Header() {
       transition={{ duration: 0.4 }}
       className="sticky top-0 z-40 w-full bg-card border-b border-border shadow-sm"
       role="banner"
-      aria-label="ICAIR Conference 2025 Header"
+      aria-label="MIRG ICAIR Conference 2025 Header"
     >
       <div className="px-4 py-4 sm:px-6 sm:py-5">
         <div className="flex items-center justify-center">

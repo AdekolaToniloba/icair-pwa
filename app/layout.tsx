@@ -7,22 +7,32 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "ICAIR Conference 2025",
-  description: "ICAIR Conference 2025 - Companion App",
+  title: "MIRG-ICAIR 2025 | Companion App",
+  description:
+    "Official companion app for MIRG-ICAIR 2025 - 5th International Conference on AI and Robotics. Building Sustainable AI-Driven Transformation Infrastructures for African Economies.",
   generator: "Nithub Unilag",
   manifest: "/manifest.json",
-
+  keywords: [
+    "ICAIR",
+    "MIRG",
+    "AI Conference",
+    "Robotics",
+    "Africa",
+    "Nithub",
+    "Machine Intelligence",
+    "Artificial Intelligence",
+  ],
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "ICAIR Companion",
+    title: "ICAIR 2025",
   },
   formatDetection: {
     telephone: false,
   },
 };
 export const viewport = {
-  themeColor: "#00A651",
+  themeColor: "#6d00ab",
 };
 
 import ClientLayout from "./client-layout";
@@ -43,11 +53,12 @@ export default function RootLayout({
           name="apple-mobile-web-app-status-bar-style"
           content="black-translucent"
         />
+        <meta name="apple-mobile-web-app-title" content="ICAIR 2025" />
+        <meta name="theme-color" content="#6d00ab" />
         <meta
-          name="apple-mobile-web-app-title"
-          content="ICAIR Conf Companion"
+          name="description"
+          content="MIRG-ICAIR 2025: Building Sustainable AI-Driven Transformation Infrastructures for African Economies"
         />
-        <meta name="theme-color" content="#00A651" />
       </head>
       <body>
         <ClientLayout>{children}</ClientLayout>

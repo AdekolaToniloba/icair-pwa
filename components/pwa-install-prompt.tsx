@@ -99,7 +99,7 @@ export function PWAInstallPrompt() {
               Install ICAIR Companion App
             </h3>
             <p className="text-sm text-green-50" id="pwa-description">
-              Get quick access and enhanced features
+              Get quick access to sessions, speakers, and venue info
             </p>
           </div>
 

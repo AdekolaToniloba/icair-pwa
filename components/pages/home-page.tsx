@@ -1,4 +1,3 @@
-// code/components/pages/home-page.tsx
 "use client";
 
 import { motion } from "framer-motion";
@@ -37,6 +36,9 @@ export default function HomePage() {
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
+    // Guard for SSR - only run on client
+    if (typeof window === "undefined") return;
+
     const handleScroll = (e: Event) => {
       const target = e.target as HTMLElement;
       setScrollY(target.scrollTop || 0);
@@ -93,26 +95,66 @@ export default function HomePage() {
           />
 
           <div className="relative z-10">
-            <motion.h2
+            <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
+              className="mb-4"
+            >
+              <span className="text-sm font-semibold bg-secondary text-secondary-foreground px-3 py-1 rounded-full">
+                5th Edition
+              </span>
+            </motion.div>
+            <motion.h2
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
               className="text-3xl font-bold mb-2"
               data-testid="hero-title"
             >
-              Welcome to ICAIR 2025!
+              MIRG-ICAIR 2025
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-white/90 mb-6"
+              transition={{ delay: 0.3 }}
+              className="text-white/90 mb-2 text-sm"
             >
-              Nov 4-7, 2025 · Lagos, Nigeria
+              Nov 4-6, 2025 · Lagos, Nigeria
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-white/80 text-xs mb-6 leading-relaxed"
+            >
+              Building Sustainable AI-Driven Transformation Infrastructures for
+              African Economies
             </motion.p>
 
             {/* Countdown Timer */}
             <CountdownTimer targetDate={conferenceDate} />
+
+            {/* Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="mt-6 grid grid-cols-3 gap-4 pt-4 border-t border-white/20"
+            >
+              <div className="text-center">
+                <p className="text-2xl font-bold">900+</p>
+                <p className="text-xs text-white/80">Participants</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold">20+</p>
+                <p className="text-xs text-white/80">Countries</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold">4</p>
+                <p className="text-xs text-white/80">Continents</p>
+              </div>
+            </motion.div>
           </div>
         </div>
       </motion.div>
@@ -141,6 +183,59 @@ export default function HomePage() {
         </div>
       </motion.div>
 
+      {/* About Section */}
+      <motion.div variants={item}>
+        <h3 className="text-lg font-bold mb-4 text-foreground">
+          About MIRG-ICAIR
+        </h3>
+        <div className="bg-card rounded-lg border border-border p-5 space-y-4">
+          <p className="text-sm text-foreground leading-relaxed">
+            The International Conference on Artificial Intelligence and Robotics
+            (ICAIR) is{" "}
+            <span className="font-semibold text-primary">
+              Africa's leading platform
+            </span>{" "}
+            for advancing research, innovation, and collaboration in AI and
+            robotics.
+          </p>
+          <div className="space-y-3">
+            <div className="flex gap-3">
+              <span className="text-2xl">🤖</span>
+              <div>
+                <p className="font-semibold text-sm text-foreground">
+                  AI & Robotics Innovation
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Cutting-edge research and practical applications
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <span className="text-2xl">🌍</span>
+              <div>
+                <p className="font-semibold text-sm text-foreground">
+                  Africa-Focused Solutions
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Context-aware AI systems for sustainable growth
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <span className="text-2xl">🤝</span>
+              <div>
+                <p className="font-semibold text-sm text-foreground">
+                  Global Collaboration
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Connecting researchers, policymakers, and industry leaders
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
       {/* Featured Updates Section */}
       <motion.div variants={item}>
         <h3 className="text-lg font-bold mb-4 text-foreground">
@@ -149,21 +244,20 @@ export default function HomePage() {
         <div className="space-y-3">
           {[
             {
-              title: "Early Bird Registration",
-              description: "Get 20% off for registrations before Oct 25",
-              icon: "🎫",
+              title: "Conference Theme Announced",
+              description:
+                "Building Sustainable AI-Driven Transformation Infrastructures",
+              icon: "🎯",
             },
             {
-              title: "Keynote Speakers Announced",
-              description:
-                "Join industry leaders for inspiring talks and discussions",
+              title: "Keynote Speakers Confirmed",
+              description: "World-renowned AI researchers and industry leaders",
               icon: "🎤",
             },
             {
-              title: "Conference Schedule Released",
-              description:
-                "Browse all sessions and plan your conference journey",
-              icon: "📋",
+              title: "Registration Now Open",
+              description: "Secure your spot at Africa's premier AI conference",
+              icon: "🎫",
             },
           ].map((update, idx) => (
             <motion.div
@@ -188,6 +282,28 @@ export default function HomePage() {
               </div>
             </motion.div>
           ))}
+        </div>
+      </motion.div>
+
+      {/* Organizers */}
+      <motion.div variants={item}>
+        <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg border border-primary/20 p-4">
+          <p className="text-xs text-muted-foreground mb-2">Organized by</p>
+          <div className="flex items-center gap-4">
+            <div>
+              <p className="font-bold text-foreground">MIRG</p>
+              <p className="text-xs text-muted-foreground">
+                Machine Intelligence Research Group
+              </p>
+            </div>
+            <span className="text-muted-foreground">×</span>
+            <div>
+              <p className="font-bold text-foreground">Nithub</p>
+              <p className="text-xs text-muted-foreground">
+                Innovation & Technology Hub
+              </p>
+            </div>
+          </div>
         </div>
       </motion.div>
 
