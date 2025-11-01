@@ -1,7 +1,6 @@
-// code/components/pages/schedule-page.tsx
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useMemo } from "react";
 import {
   Clock,
@@ -14,208 +13,110 @@ import {
   AlertCircle,
   Download,
   ChevronDown,
+  Mic2,
+  GraduationCap,
+  MessageSquare,
+  FlaskConical,
+  Coffee,
+  Building2,
+  Sparkles,
+  FileText,
+  TrendingUp,
 } from "lucide-react";
 import { useScheduleStore } from "@/store/schedule-store";
+import {
+  CONFERENCE_SCHEDULE,
+  type Session,
+  type DaySchedule,
+  searchSessions,
+} from "@/data/schedule-data";
 
-// Session data structure
-interface Session {
-  id: string;
-  time: string;
-  startTime: number;
-  endTime: number;
-  title: string;
-  speaker: string;
-  room: string;
-  track: "Keynote" | "Workshop" | "Panel" | "Technical" | "Networking";
-  level: "Beginner" | "Intermediate" | "Advanced";
-  capacity: number;
-  description: string;
-  avatar?: string;
-}
-
-const sessions: Record<string, Session[]> = {
-  "Nov 4": [
-    {
-      id: "s1",
-      time: "09:00-10:00",
-      startTime: 9,
-      endTime: 10,
-      title: "Opening Keynote",
-      speaker: "Dr. Sarah Chen",
-      room: "Main Hall",
-      track: "Keynote",
-      level: "All" as any,
-      capacity: 500,
-      description:
-        "An inspiring welcome address and overview of the conference themes.",
-      avatar: "👩‍💼",
-    },
-    {
-      id: "s2",
-      time: "10:15-11:15",
-      startTime: 10.25,
-      endTime: 11.25,
-      title: "AI in Higher Education",
-      speaker: "Prof. James Okafor",
-      room: "Room A",
-      track: "Technical",
-      level: "Intermediate",
-      capacity: 80,
-      description:
-        "Exploring applications of artificial intelligence in academic institutions.",
-      avatar: "👨‍🏫",
-    },
-    {
-      id: "s3",
-      time: "10:15-11:15",
-      startTime: 10.25,
-      endTime: 11.25,
-      title: "Digital Transformation Workshop",
-      speaker: "Chioma Adeyemi",
-      room: "Room B",
-      track: "Workshop",
-      level: "Beginner",
-      capacity: 60,
-      description:
-        "Hands-on workshop on digital transformation strategies for institutions.",
-      avatar: "👩‍💻",
-    },
-    {
-      id: "s4",
-      time: "11:30-12:30",
-      startTime: 11.5,
-      endTime: 12.5,
-      title: "Research Excellence Panel",
-      speaker: "Multiple Speakers",
-      room: "Main Hall",
-      track: "Panel",
-      level: "Advanced",
-      capacity: 200,
-      description:
-        "Leading researchers discuss cutting-edge findings and future directions.",
-      avatar: "🎤",
-    },
-    {
-      id: "s5",
-      time: "12:30-13:30",
-      startTime: 12.5,
-      endTime: 13.5,
-      title: "Lunch Break",
-      speaker: "Networking",
-      room: "Cafeteria",
-      track: "Networking",
-      level: "All" as any,
-      capacity: 500,
-      description: "Enjoy lunch and network with fellow attendees.",
-      avatar: "🍽️",
-    },
-    {
-      id: "s6",
-      time: "14:00-15:00",
-      startTime: 14,
-      endTime: 15,
-      title: "Future of Education Technology",
-      speaker: "Dr. Amara Eze",
-      room: "Room C",
-      track: "Technical",
-      level: "Intermediate",
-      capacity: 100,
-      description:
-        "Emerging technologies shaping the future of educational experiences.",
-      avatar: "👩‍🔬",
-    },
-    {
-      id: "s7",
-      time: "15:15-16:15",
-      startTime: 15.25,
-      endTime: 16.25,
-      title: "Networking Session",
-      speaker: "All Attendees",
-      room: "Conference Lounge",
-      track: "Networking",
-      level: "All" as any,
-      capacity: 300,
-      description:
-        "Informal networking session to connect with peers and speakers.",
-      avatar: "🤝",
-    },
-  ],
-  "Nov 5": [
-    {
-      id: "s8",
-      time: "09:00-10:00",
-      startTime: 9,
-      endTime: 10,
-      title: "Advanced Python Programming",
-      speaker: "Dr. Tunde Adesina",
-      room: "Lab 1",
-      track: "Workshop",
-      level: "Advanced",
-      capacity: 40,
-      description:
-        "Deep dive into advanced Python concepts and best practices.",
-      avatar: "🐍",
-    },
-    {
-      id: "s9",
-      time: "10:15-11:15",
-      startTime: 10.25,
-      endTime: 11.25,
-      title: "Cloud Infrastructure Basics",
-      speaker: "Zainab Hassan",
-      room: "Room D",
-      track: "Technical",
-      level: "Beginner",
-      capacity: 75,
-      description:
-        "Introduction to cloud computing concepts and AWS fundamentals.",
-      avatar: "☁️",
-    },
-    {
-      id: "s10",
-      time: "11:30-12:30",
-      startTime: 11.5,
-      endTime: 12.5,
-      title: "Industry Insights Panel",
-      speaker: "Multiple Speakers",
-      room: "Main Hall",
-      track: "Panel",
-      level: "Intermediate",
-      capacity: 250,
-      description:
-        "Tech leaders share insights on industry trends and career opportunities.",
-      avatar: "💼",
-    },
-    {
-      id: "s11",
-      time: "14:00-15:30",
-      startTime: 14,
-      endTime: 15.5,
-      title: "Project Showcase",
-      speaker: "Student Teams",
-      room: "Exhibition Hall",
-      track: "Technical",
-      level: "Beginner",
-      capacity: 150,
-      description:
-        "Students showcase innovative projects and research findings.",
-      avatar: "🎯",
-    },
-    {
-      id: "s12",
-      time: "16:00-17:00",
-      startTime: 16,
-      endTime: 17,
-      title: "Closing Ceremony",
-      speaker: "Conference Organizers",
-      room: "Main Hall",
-      track: "Keynote",
-      level: "All" as any,
-      capacity: 500,
-      description: "Conference highlights, awards, and closing remarks.",
-      avatar: "🏆",
-    },
-  ],
+// Type-specific icons and colors
+const TYPE_CONFIG = {
+  keynote: {
+    icon: Mic2,
+    color: "text-red-600",
+    bg: "bg-red-50",
+    border: "border-red-200",
+    label: "Keynote",
+  },
+  panel: {
+    icon: MessageSquare,
+    color: "text-blue-600",
+    bg: "bg-blue-50",
+    border: "border-blue-200",
+    label: "Panel",
+  },
+  masterclass: {
+    icon: GraduationCap,
+    color: "text-purple-600",
+    bg: "bg-purple-50",
+    border: "border-purple-200",
+    label: "Master Class",
+  },
+  "paper-session": {
+    icon: FlaskConical,
+    color: "text-green-600",
+    bg: "bg-green-50",
+    border: "border-green-200",
+    label: "Research Papers",
+  },
+  workshop: {
+    icon: Building2,
+    color: "text-orange-600",
+    bg: "bg-orange-50",
+    border: "border-orange-200",
+    label: "Workshop",
+  },
+  networking: {
+    icon: Users,
+    color: "text-cyan-600",
+    bg: "bg-cyan-50",
+    border: "border-cyan-200",
+    label: "Networking",
+  },
+  ceremony: {
+    icon: Sparkles,
+    color: "text-yellow-600",
+    bg: "bg-yellow-50",
+    border: "border-yellow-200",
+    label: "Ceremony",
+  },
+  break: {
+    icon: Coffee,
+    color: "text-gray-600",
+    bg: "bg-gray-50",
+    border: "border-gray-200",
+    label: "Break",
+  },
+  talk: {
+    icon: User,
+    color: "text-indigo-600",
+    bg: "bg-indigo-50",
+    border: "border-indigo-200",
+    label: "Talk",
+  },
+  roundtable: {
+    icon: Users,
+    color: "text-pink-600",
+    bg: "bg-pink-50",
+    border: "border-pink-200",
+    label: "Roundtable",
+  },
+  tour: {
+    icon: MapPin,
+    color: "text-teal-600",
+    bg: "bg-teal-50",
+    border: "border-teal-200",
+    label: "Tour",
+  },
+  poster: {
+    icon: FileText,
+    color: "text-violet-600",
+    bg: "bg-violet-50",
+    border: "border-violet-200",
+    label: "Poster Session",
+  },
 };
 
 const container = {
@@ -223,7 +124,7 @@ const container = {
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.05,
+      staggerChildren: 0.03,
       delayChildren: 0.1,
     },
   },
@@ -231,52 +132,82 @@ const container = {
 
 const item = {
   hidden: { opacity: 0, y: 10 },
-  show: { opacity: 1, y: 0 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut",
+    },
+  },
 };
 
 export default function SchedulePage() {
   const [viewType, setViewType] = useState<"agenda" | "tracks" | "my-schedule">(
     "agenda"
   );
-  const [selectedDay, setSelectedDay] = useState<"Nov 4" | "Nov 5">("Nov 4");
+  const [selectedDay, setSelectedDay] = useState<"Day 1" | "Day 2" | "Day 3">(
+    "Day 1"
+  );
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedType, setSelectedType] = useState<string | null>(null);
   const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
-  const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
   const [expandedSession, setExpandedSession] = useState<string | null>(null);
   const { starredSessions, toggleStarSession } = useScheduleStore();
 
-  // Get all unique tracks and levels
-  const allTracks = Array.from(
+  // Get all unique types and tracks
+  const allTypes = Array.from(
     new Set(
-      Object.values(sessions)
-        .flat()
-        .map((s) => s.track)
+      Object.values(CONFERENCE_SCHEDULE)
+        .flatMap((day) => day.sessions)
+        .map((s) => s.type)
     )
   );
-  const allLevels = Array.from(
+
+  const allTracks = Array.from(
     new Set(
-      Object.values(sessions)
-        .flat()
-        .map((s) => s.level)
+      Object.values(CONFERENCE_SCHEDULE)
+        .flatMap((day) => day.sessions)
+        .map((s) => s.track)
     )
   );
 
   // Filter and search logic
   const filteredSessions = useMemo(() => {
-    let result = Object.values(sessions)
-      .flat()
-      .filter((session) => {
-        const matchesSearch =
-          session.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          session.speaker.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesTrack = !selectedTrack || session.track === selectedTrack;
-        const matchesLevel = !selectedLevel || session.level === selectedLevel;
+    let allSessions = Object.values(CONFERENCE_SCHEDULE).flatMap(
+      (day) => day.sessions
+    );
 
-        return matchesSearch && matchesTrack && matchesLevel;
-      });
+    // Apply search
+    if (searchQuery.trim()) {
+      allSessions = searchSessions(searchQuery);
+    }
 
+    // Apply filters
+    let result = allSessions.filter((session) => {
+      const matchesType = !selectedType || session.type === selectedType;
+      const matchesTrack = !selectedTrack || session.track === selectedTrack;
+      return matchesType && matchesTrack;
+    });
+
+    // Apply view type filters
     if (viewType === "agenda") {
-      result = result.filter((s) => sessions[selectedDay].includes(s));
+      result =
+        CONFERENCE_SCHEDULE[selectedDay]?.sessions.filter((session) => {
+          const matchesType = !selectedType || session.type === selectedType;
+          const matchesTrack =
+            !selectedTrack || session.track === selectedTrack;
+          const matchesSearch =
+            !searchQuery.trim() ||
+            session.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            session.description
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            session.speakers?.some((s) =>
+              s.name.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+          return matchesType && matchesTrack && matchesSearch;
+        }) || [];
     } else if (viewType === "my-schedule") {
       result = result.filter((s) => starredSessions.includes(s.id));
     }
@@ -284,8 +215,8 @@ export default function SchedulePage() {
     return result;
   }, [
     searchQuery,
+    selectedType,
     selectedTrack,
-    selectedLevel,
     viewType,
     selectedDay,
     starredSessions,
@@ -293,8 +224,8 @@ export default function SchedulePage() {
 
   // Conflict detection
   const conflicts = useMemo(() => {
-    const starred = Object.values(sessions)
-      .flat()
+    const starred = Object.values(CONFERENCE_SCHEDULE)
+      .flatMap((day) => day.sessions)
       .filter((s) => starredSessions.includes(s.id));
     const conflicting = new Set<string>();
 
@@ -324,25 +255,54 @@ export default function SchedulePage() {
     return grouped;
   }, [filteredSessions]);
 
-  const generateICS = (session: Session) => {
+  const generateICS = (session: Session, daySchedule?: DaySchedule) => {
+    // Find which day this session belongs to
+    let sessionDate = "2025-11-04";
+    for (const [key, day] of Object.entries(CONFERENCE_SCHEDULE)) {
+      if (day.sessions.some((s) => s.id === session.id)) {
+        if (key === "Day 2") sessionDate = "2025-11-05";
+        if (key === "Day 3") sessionDate = "2025-11-06";
+        break;
+      }
+    }
+
+    const [startHour, startMin] = session.time
+      .split("-")[0]
+      .trim()
+      .split(":")
+      .map(Number);
+    const [endHour, endMin] = session.time
+      .split("-")[1]
+      .trim()
+      .split(":")
+      .map(Number);
+
     const start = new Date(
-      "2025-11-04T" + session.time.split("-")[0] + ":00"
-    ).toISOString();
+      `${sessionDate}T${String(startHour).padStart(2, "0")}:${String(
+        startMin || 0
+      ).padStart(2, "0")}:00`
+    );
     const end = new Date(
-      "2025-11-04T" + session.time.split("-")[1] + ":00"
-    ).toISOString();
+      `${sessionDate}T${String(endHour).padStart(2, "0")}:${String(
+        endMin || 0
+      ).padStart(2, "0")}:00`
+    );
 
     const ical = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//UNILAG Conference//EN
+PRODID:-//MIRG-ICAIR Conference//EN
 BEGIN:VEVENT
 UID:${session.id}@unilag.edu
-DTSTAMP:${new Date().toISOString()}
-DTSTART:${start}
-DTEND:${end}
+DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}Z
+DTSTART:${start.toISOString().replace(/[-:]/g, "").split(".")[0]}Z
+DTEND:${end.toISOString().replace(/[-:]/g, "").split(".")[0]}Z
 SUMMARY:${session.title}
-DESCRIPTION:${session.description}
-LOCATION:${session.room}
+DESCRIPTION:${session.description}${
+      session.speakers
+        ? "\\n\\nSpeakers: " + session.speakers.map((s) => s.name).join(", ")
+        : ""
+    }
+LOCATION:${session.room}, University of Lagos
 END:VEVENT
 END:VCALENDAR`;
 
@@ -354,136 +314,186 @@ END:VCALENDAR`;
     link.click();
   };
 
+  const currentDayInfo = CONFERENCE_SCHEDULE[selectedDay];
+
   return (
     <motion.div
       variants={container}
       initial="hidden"
       animate="show"
-      className="px-4 py-6 sm:px-6 sm:py-8 pb-8"
+      className="px-4 py-6 sm:px-6 sm:py-8 pb-24"
     >
-      <h2
-        className="text-2xl font-bold mb-6 text-foreground"
-        data-testid="schedule-title"
-      >
-        Conference Schedule
-      </h2>
+      {/* Header */}
+      <motion.div variants={item} className="mb-6">
+        <h2
+          className="text-3xl font-bold mb-2 text-foreground"
+          data-testid="schedule-title"
+        >
+          Conference Schedule
+        </h2>
+        <p className="text-muted-foreground">
+          MIRG-ICAIR 2025 • University of Lagos • November 4-6
+        </p>
+      </motion.div>
 
       {/* View Type Tabs */}
       <motion.div
         variants={item}
-        className="flex gap-2 mb-6 overflow-x-auto pb-2"
+        className="flex gap-2 mb-6 overflow-x-auto pb-2 hide-scrollbar"
         role="tablist"
-        aria-label="Schedule view options"
       >
-        {(["agenda", "tracks", "my-schedule"] as const).map((view) => (
-          <motion.button
-            key={view}
-            onClick={() => setViewType(view)}
-            whileTap={{ scale: 0.95 }}
-            className={`px-4 py-2 rounded-full font-medium text-sm whitespace-nowrap transition-all ${
-              viewType === view
-                ? "bg-primary text-white"
-                : "bg-primary/10 text-primary hover:bg-primary/20"
-            }`}
-            data-testid={`view-${view}`}
-            role="tab"
-            aria-selected={viewType === view}
-            aria-controls={`${view}-panel`}
-          >
-            {view === "agenda" && "Agenda"}
-            {view === "tracks" && "Tracks"}
-            {view === "my-schedule" && "My Schedule"}
-          </motion.button>
-        ))}
+        {(
+          [
+            { value: "agenda", label: "Daily Agenda", icon: Clock },
+            { value: "tracks", label: "By Track", icon: TrendingUp },
+            { value: "my-schedule", label: "My Schedule", icon: Star },
+          ] as const
+        ).map((view) => {
+          const Icon = view.icon;
+          const isActive = viewType === view.value;
+          return (
+            <motion.button
+              key={view.value}
+              onClick={() => setViewType(view.value)}
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: isActive ? 1 : 1.02 }}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm whitespace-nowrap transition-all ${
+                isActive
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "bg-card border border-border text-foreground hover:border-primary/40"
+              }`}
+              data-testid={`view-${view.value}`}
+              role="tab"
+              aria-selected={isActive}
+            >
+              <Icon size={16} />
+              {view.label}
+            </motion.button>
+          );
+        })}
       </motion.div>
+
+      {/* Day Selection (for Agenda view) */}
+      {viewType === "agenda" && (
+        <motion.div variants={item} className="mb-6">
+          <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
+            {Object.entries(CONFERENCE_SCHEDULE).map(([key, day]) => {
+              const isActive = selectedDay === key;
+              return (
+                <motion.button
+                  key={key}
+                  onClick={() => setSelectedDay(key as any)}
+                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: isActive ? 1 : 1.02 }}
+                  className={`flex-shrink-0 px-5 py-3 rounded-xl text-sm font-semibold transition-all ${
+                    isActive
+                      ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg"
+                      : "bg-card border border-border text-foreground hover:border-primary/40"
+                  }`}
+                  data-testid={`day-${key}`}
+                >
+                  <div className="text-left">
+                    <div className="font-bold">{key}</div>
+                    <div
+                      className={`text-xs ${
+                        isActive
+                          ? "text-primary-foreground/80"
+                          : "text-muted-foreground"
+                      }`}
+                    >
+                      {day.dayOfWeek}, {day.date.split(",")[0]}
+                    </div>
+                  </div>
+                </motion.button>
+              );
+            })}
+          </div>
+        </motion.div>
+      )}
 
       {/* Search and Filters */}
       <motion.div
         variants={item}
-        className="bg-card rounded-lg border border-border p-4 mb-6"
+        className="bg-card rounded-xl border border-border p-4 mb-6 shadow-sm"
       >
         {/* Search Bar */}
         <div className="mb-4">
-          <label
-            htmlFor="session-search"
-            className="text-sm font-medium text-foreground mb-2 block"
-          >
-            Search Sessions
-          </label>
           <div className="relative">
             <Search
               className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
               size={18}
-              aria-hidden="true"
             />
             <input
-              id="session-search"
               type="text"
-              placeholder="Search sessions or speakers..."
+              placeholder="Search sessions, speakers, or topics..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary"
+              className="w-full pl-10 pr-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               data-testid="search-input"
-              aria-label="Search sessions by title or speaker name"
             />
           </div>
         </div>
 
         {/* Filter Options */}
         <div className="space-y-3">
-          {/* Day Selection (for Agenda view) */}
-          {viewType === "agenda" && (
-            <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">
-                Day
-              </label>
-              <div
-                className="flex gap-2"
-                role="group"
-                aria-label="Conference days"
+          {/* Type Filter */}
+          <div>
+            <label className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+              <Filter size={14} />
+              Session Type
+            </label>
+            <div className="flex gap-2 flex-wrap">
+              <motion.button
+                onClick={() => setSelectedType(null)}
+                whileTap={{ scale: 0.95 }}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  !selectedType
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                }`}
               >
-                {["Nov 4", "Nov 5"].map((day) => (
+                All Types
+              </motion.button>
+              {allTypes.map((type) => {
+                const config = TYPE_CONFIG[type];
+                const Icon = config.icon;
+                const isSelected = selectedType === type;
+                return (
                   <motion.button
-                    key={day}
-                    onClick={() => setSelectedDay(day as "Nov 4" | "Nov 5")}
+                    key={type}
+                    onClick={() => setSelectedType(isSelected ? null : type)}
                     whileTap={{ scale: 0.95 }}
-                    className={`px-3 py-1 rounded-full text-sm transition-all ${
-                      selectedDay === day
-                        ? "bg-primary text-white"
-                        : "bg-primary/10 text-primary hover:bg-primary/20"
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      isSelected
+                        ? `${config.bg} ${config.color} ${config.border} border shadow-sm`
+                        : "bg-muted text-muted-foreground hover:bg-muted/80"
                     }`}
-                    data-testid={`day-${day}`}
-                    aria-pressed={selectedDay === day}
+                    data-testid={`type-${type}`}
                   >
-                    {day}
+                    <Icon size={12} />
+                    {config.label}
                   </motion.button>
-                ))}
-              </div>
+                );
+              })}
             </div>
-          )}
+          </div>
 
           {/* Track Filter */}
           <div>
-            <label className="text-sm font-medium text-foreground mb-2 block flex items-center gap-2">
-              <Filter size={16} aria-hidden="true" />
+            <label className="text-sm font-semibold text-foreground mb-2 block">
               Track
             </label>
-            <div
-              className="flex gap-2 flex-wrap"
-              role="group"
-              aria-label="Session tracks"
-            >
+            <div className="flex gap-2 flex-wrap">
               <motion.button
                 onClick={() => setSelectedTrack(null)}
                 whileTap={{ scale: 0.95 }}
-                className={`px-3 py-1 rounded-full text-xs transition-all ${
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                   !selectedTrack
-                    ? "bg-primary text-white"
-                    : "bg-primary/10 text-primary hover:bg-primary/20"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
                 }`}
-                aria-pressed={!selectedTrack}
               >
-                All
+                All Tracks
               </motion.button>
               {allTracks.map((track) => (
                 <motion.button
@@ -492,58 +502,14 @@ END:VCALENDAR`;
                     setSelectedTrack(selectedTrack === track ? null : track)
                   }
                   whileTap={{ scale: 0.95 }}
-                  className={`px-3 py-1 rounded-full text-xs transition-all ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                     selectedTrack === track
-                      ? "bg-primary text-white"
-                      : "bg-primary/10 text-primary hover:bg-primary/20"
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
                   }`}
                   data-testid={`track-${track}`}
-                  aria-pressed={selectedTrack === track}
                 >
                   {track}
-                </motion.button>
-              ))}
-            </div>
-          </div>
-
-          {/* Level Filter */}
-          <div>
-            <label className="text-sm font-medium text-foreground mb-2 block">
-              Level
-            </label>
-            <div
-              className="flex gap-2 flex-wrap"
-              role="group"
-              aria-label="Session levels"
-            >
-              <motion.button
-                onClick={() => setSelectedLevel(null)}
-                whileTap={{ scale: 0.95 }}
-                className={`px-3 py-1 rounded-full text-xs transition-all ${
-                  !selectedLevel
-                    ? "bg-primary text-white"
-                    : "bg-primary/10 text-primary hover:bg-primary/20"
-                }`}
-                aria-pressed={!selectedLevel}
-              >
-                All
-              </motion.button>
-              {allLevels.map((level) => (
-                <motion.button
-                  key={level}
-                  onClick={() =>
-                    setSelectedLevel(selectedLevel === level ? null : level)
-                  }
-                  whileTap={{ scale: 0.95 }}
-                  className={`px-3 py-1 rounded-full text-xs transition-all ${
-                    selectedLevel === level
-                      ? "bg-primary text-white"
-                      : "bg-primary/10 text-primary hover:bg-primary/20"
-                  }`}
-                  data-testid={`level-${level}`}
-                  aria-pressed={selectedLevel === level}
-                >
-                  {level}
                 </motion.button>
               ))}
             </div>
@@ -552,143 +518,200 @@ END:VCALENDAR`;
       </motion.div>
 
       {/* Conflict Warning */}
-      {conflicts.size > 0 && (
-        <motion.div
-          variants={item}
-          className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex gap-3"
-          data-testid="conflict-warning"
-          role="alert"
-          aria-live="assertive"
-        >
-          <AlertCircle
-            size={20}
-            className="text-red-600 flex-shrink-0 mt-0.5"
-            aria-hidden="true"
-          />
-          <div>
-            <p className="font-semibold text-red-900">
-              Schedule Conflict Detected
-            </p>
-            <p className="text-sm text-red-800">
-              {conflicts.size} of your selected sessions overlap. Please review
-              your choices.
-            </p>
-          </div>
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {conflicts.size > 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+            animate={{ opacity: 1, height: "auto", marginBottom: 24 }}
+            exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+            className="overflow-hidden"
+          >
+            <motion.div
+              initial={{ x: -20 }}
+              animate={{ x: 0 }}
+              className="p-4 bg-red-50 border border-red-200 rounded-lg flex gap-3"
+              data-testid="conflict-warning"
+              role="alert"
+            >
+              <AlertCircle
+                size={20}
+                className="text-red-600 flex-shrink-0 mt-0.5"
+              />
+              <div>
+                <p className="font-semibold text-red-900">Schedule Conflict</p>
+                <p className="text-sm text-red-800">
+                  {conflicts.size} starred session
+                  {conflicts.size > 1 ? "s" : ""} overlap. Review your
+                  selections.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Sessions Display */}
-      <motion.div variants={item} id={`${viewType}-panel`} role="tabpanel">
-        {viewType === "agenda" ? (
-          // Agenda View - Timeline
-          <div className="space-y-3">
-            {filteredSessions.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">
-                No sessions found
-              </p>
-            ) : (
-              filteredSessions.map((session, idx) => (
-                <SessionCard
-                  key={session.id}
-                  session={session}
-                  index={idx}
-                  isStarred={starredSessions.includes(session.id)}
-                  onToggleStar={() => toggleStarSession(session.id)}
-                  isExpanded={expandedSession === session.id}
-                  onToggleExpand={() =>
-                    setExpandedSession(
-                      expandedSession === session.id ? null : session.id
-                    )
-                  }
-                  hasConflict={conflicts.has(session.id)}
-                  onDownloadICS={() => generateICS(session)}
-                />
-              ))
-            )}
-          </div>
-        ) : viewType === "tracks" ? (
-          // Tracks View - Grouped by Category
-          <div className="space-y-6">
-            {Object.entries(sessionsByTrack).length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">
-                No sessions found
-              </p>
-            ) : (
-              Object.entries(sessionsByTrack).map(
-                ([track, trackSessions], trackIdx) => (
-                  <motion.div
-                    key={track}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: trackIdx * 0.1 }}
-                  >
-                    <h3
-                      className="text-lg font-bold text-foreground mb-3"
-                      data-testid={`track-header-${track}`}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={`${viewType}-${selectedDay}-${searchQuery}-${selectedType}-${selectedTrack}`}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+        >
+          {viewType === "agenda" ? (
+            // Agenda View - Timeline
+            <div className="space-y-3">
+              {filteredSessions.length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-12"
+                >
+                  <Clock
+                    className="mx-auto mb-3 text-muted-foreground opacity-30"
+                    size={48}
+                  />
+                  <p className="text-muted-foreground">No sessions found</p>
+                </motion.div>
+              ) : (
+                filteredSessions.map((session, idx) => (
+                  <SessionCard
+                    key={session.id}
+                    session={session}
+                    index={idx}
+                    isStarred={starredSessions.includes(session.id)}
+                    onToggleStar={() => toggleStarSession(session.id)}
+                    isExpanded={expandedSession === session.id}
+                    onToggleExpand={() =>
+                      setExpandedSession(
+                        expandedSession === session.id ? null : session.id
+                      )
+                    }
+                    hasConflict={conflicts.has(session.id)}
+                    onDownloadICS={() => generateICS(session)}
+                  />
+                ))
+              )}
+            </div>
+          ) : viewType === "tracks" ? (
+            // Tracks View - Grouped by Track
+            <div className="space-y-6">
+              {Object.entries(sessionsByTrack).length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-12"
+                >
+                  <TrendingUp
+                    className="mx-auto mb-3 text-muted-foreground opacity-30"
+                    size={48}
+                  />
+                  <p className="text-muted-foreground">No sessions found</p>
+                </motion.div>
+              ) : (
+                Object.entries(sessionsByTrack).map(
+                  ([track, trackSessions], trackIdx) => (
+                    <motion.div
+                      key={track}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: trackIdx * 0.1 }}
                     >
-                      {track}
-                    </h3>
-                    <div className="space-y-2">
-                      {trackSessions.map((session, idx) => (
-                        <SessionCard
-                          key={session.id}
-                          session={session}
-                          index={idx}
-                          isStarred={starredSessions.includes(session.id)}
-                          onToggleStar={() => toggleStarSession(session.id)}
-                          isExpanded={expandedSession === session.id}
-                          onToggleExpand={() =>
-                            setExpandedSession(
-                              expandedSession === session.id ? null : session.id
-                            )
-                          }
-                          hasConflict={conflicts.has(session.id)}
-                          onDownloadICS={() => generateICS(session)}
-                        />
-                      ))}
-                    </div>
-                  </motion.div>
+                      <motion.h3
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="text-xl font-bold text-foreground mb-4 flex items-center gap-2"
+                      >
+                        <div className="w-1 h-6 bg-primary rounded-full" />
+                        {track}
+                        <span className="text-sm font-normal text-muted-foreground">
+                          ({trackSessions.length})
+                        </span>
+                      </motion.h3>
+                      <div className="space-y-3">
+                        {trackSessions.map((session, idx) => (
+                          <SessionCard
+                            key={session.id}
+                            session={session}
+                            index={idx}
+                            isStarred={starredSessions.includes(session.id)}
+                            onToggleStar={() => toggleStarSession(session.id)}
+                            isExpanded={expandedSession === session.id}
+                            onToggleExpand={() =>
+                              setExpandedSession(
+                                expandedSession === session.id
+                                  ? null
+                                  : session.id
+                              )
+                            }
+                            hasConflict={conflicts.has(session.id)}
+                            onDownloadICS={() => generateICS(session)}
+                          />
+                        ))}
+                      </div>
+                    </motion.div>
+                  )
                 )
-              )
-            )}
-          </div>
-        ) : (
-          // My Schedule View
-          <div className="space-y-3">
-            {filteredSessions.length === 0 ? (
-              <motion.div variants={item} className="text-center py-8">
-                <Star
-                  className="mx-auto mb-2 text-muted-foreground"
-                  size={32}
-                />
-                <p className="text-muted-foreground">
-                  {starredSessions.length === 0
-                    ? "No sessions starred yet. Star sessions to add them to your schedule!"
-                    : "No sessions match your filters"}
-                </p>
-              </motion.div>
-            ) : (
-              filteredSessions.map((session, idx) => (
-                <SessionCard
-                  key={session.id}
-                  session={session}
-                  index={idx}
-                  isStarred={true}
-                  onToggleStar={() => toggleStarSession(session.id)}
-                  isExpanded={expandedSession === session.id}
-                  onToggleExpand={() =>
-                    setExpandedSession(
-                      expandedSession === session.id ? null : session.id
-                    )
-                  }
-                  hasConflict={conflicts.has(session.id)}
-                  onDownloadICS={() => generateICS(session)}
-                />
-              ))
-            )}
-          </div>
-        )}
-      </motion.div>
+              )}
+            </div>
+          ) : (
+            // My Schedule View
+            <div className="space-y-3">
+              {filteredSessions.length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-12"
+                >
+                  <Star
+                    className="mx-auto mb-3 text-muted-foreground opacity-30"
+                    size={48}
+                  />
+                  <p className="text-muted-foreground mb-2">
+                    {starredSessions.length === 0
+                      ? "No sessions starred yet"
+                      : "No sessions match your filters"}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {starredSessions.length === 0 &&
+                      "Star sessions to build your personal schedule"}
+                  </p>
+                </motion.div>
+              ) : (
+                filteredSessions.map((session, idx) => (
+                  <SessionCard
+                    key={session.id}
+                    session={session}
+                    index={idx}
+                    isStarred={true}
+                    onToggleStar={() => toggleStarSession(session.id)}
+                    isExpanded={expandedSession === session.id}
+                    onToggleExpand={() =>
+                      setExpandedSession(
+                        expandedSession === session.id ? null : session.id
+                      )
+                    }
+                    hasConflict={conflicts.has(session.id)}
+                    onDownloadICS={() => generateICS(session)}
+                  />
+                ))
+              )}
+            </div>
+          )}
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Custom scrollbar styles */}
+      <style jsx>{`
+        .hide-scrollbar {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </motion.div>
   );
 }
@@ -713,53 +736,58 @@ function SessionCard({
   hasConflict: boolean;
   onDownloadICS: () => void;
 }) {
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case "Beginner":
-        return "bg-green-100 text-green-700";
-      case "Intermediate":
-        return "bg-yellow-100 text-yellow-700";
-      case "Advanced":
-        return "bg-red-100 text-red-700";
-      default:
-        return "bg-gray-100 text-gray-700";
-    }
-  };
+  const typeConfig = TYPE_CONFIG[session.type];
+  const TypeIcon = typeConfig.icon;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
-      whileHover={{ y: -2 }}
-      className={`bg-card rounded-lg border transition-all cursor-pointer ${
+      transition={{ delay: index * 0.03, duration: 0.3 }}
+      whileHover={{ y: -2, transition: { duration: 0.2 } }}
+      className={`bg-card rounded-xl border transition-all ${
         hasConflict
-          ? "border-red-300 hover:border-red-500 hover:shadow-red-200/50"
-          : "border-border hover:border-primary/30 hover:shadow-lg"
-      }`}
+          ? "border-red-300 hover:border-red-400 hover:shadow-red-100/50"
+          : "border-border hover:border-primary/30 hover:shadow-md"
+      } overflow-hidden`}
       data-testid={`session-${session.id}`}
     >
+      {/* Type indicator bar */}
+      <div className={`h-1 ${typeConfig.bg}`} />
+
       <div className="p-4">
-        <div className="flex gap-3">
-          {/* Avatar/Icon */}
-          <div className="flex-shrink-0 text-3xl mt-1">{session.avatar}</div>
+        {/* Header */}
+        <div className="flex gap-3 mb-3">
+          {/* Type Icon */}
+          <motion.div
+            whileHover={{ rotate: 5, scale: 1.1 }}
+            className={`flex-shrink-0 w-10 h-10 rounded-lg ${typeConfig.bg} flex items-center justify-center`}
+          >
+            <TypeIcon className={typeConfig.color} size={20} />
+          </motion.div>
 
           {/* Content */}
-          <div className="flex-1">
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-bold text-foreground">{session.title}</h3>
-                  {hasConflict && (
-                    <AlertCircle
-                      size={16}
-                      className="text-red-600 flex-shrink-0"
-                    />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-foreground leading-tight mb-1">
+                  {session.title}
+                </h3>
+                <div className="flex items-center gap-3 text-sm text-muted-foreground flex-wrap">
+                  <div className="flex items-center gap-1">
+                    <Clock size={14} />
+                    <span className="font-medium">{session.time}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <MapPin size={14} />
+                    <span>{session.room}</span>
+                  </div>
+                  {session.capacity && (
+                    <div className="flex items-center gap-1">
+                      <Users size={14} />
+                      <span>{session.capacity}</span>
+                    </div>
                   )}
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                  <Clock size={14} />
-                  {session.time}
                 </div>
               </div>
 
@@ -769,59 +797,75 @@ function SessionCard({
                   e.stopPropagation();
                   onToggleStar();
                 }}
-                whileTap={{ scale: 0.9 }}
-                animate={{ rotate: isStarred ? 0 : 0 }}
+                whileTap={{ scale: 0.85 }}
+                whileHover={{ scale: 1.1 }}
                 className="p-2 hover:bg-primary/10 rounded-lg transition-colors flex-shrink-0"
                 data-testid={`star-${session.id}`}
               >
-                <Star
-                  size={20}
-                  className={
-                    isStarred
-                      ? "fill-secondary text-secondary"
-                      : "text-muted-foreground"
-                  }
-                />
+                <motion.div
+                  animate={{
+                    scale: isStarred ? [1, 1.3, 1] : 1,
+                    rotate: isStarred ? [0, -15, 0] : 0,
+                  }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Star
+                    size={20}
+                    className={
+                      isStarred
+                        ? "fill-yellow-400 text-yellow-400"
+                        : "text-muted-foreground"
+                    }
+                  />
+                </motion.div>
               </motion.button>
             </div>
 
-            {/* Metadata */}
-            <div className="flex gap-3 mb-3 flex-wrap items-center">
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <User size={14} />
-                {session.speaker}
-              </div>
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <MapPin size={14} />
-                {session.room}
-              </div>
-              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                <Users size={14} />
-                {session.capacity}
-              </div>
-            </div>
-
-            {/* Level Badge and Track */}
-            <div className="flex gap-2 mb-3">
+            {/* Badges */}
+            <div className="flex gap-2 mb-3 flex-wrap">
               <span
-                className={`px-2 py-1 rounded text-xs font-medium ${getLevelColor(
-                  session.level
-                )}`}
+                className={`px-2 py-1 rounded-md text-xs font-medium ${typeConfig.bg} ${typeConfig.color}`}
               >
-                {session.level}
+                {typeConfig.label}
               </span>
-              <span className="px-2 py-1 rounded text-xs font-medium bg-primary/10 text-primary">
+              <span className="px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary">
                 {session.track}
               </span>
+              {hasConflict && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-red-100 text-red-700"
+                >
+                  <AlertCircle size={12} />
+                  Conflict
+                </motion.span>
+              )}
             </div>
 
-            {/* Expand/Collapse Section */}
+            {/* Speakers/Moderator preview */}
+            {(session.speakers || session.moderator) && !isExpanded && (
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <User size={14} />
+                <span className="truncate">
+                  {session.moderator && `Moderator: ${session.moderator.name}`}
+                  {session.moderator && session.speakers && " • "}
+                  {session.speakers &&
+                    `${session.speakers.length} speaker${
+                      session.speakers.length > 1 ? "s" : ""
+                    }`}
+                </span>
+              </div>
+            )}
+
+            {/* Expand Button */}
             <motion.button
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleExpand();
               }}
-              className="text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors"
+              whileTap={{ scale: 0.95 }}
+              className="mt-2 text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors"
               data-testid={`expand-${session.id}`}
             >
               {isExpanded ? "Hide Details" : "View Details"}
@@ -834,33 +878,124 @@ function SessionCard({
             </motion.button>
 
             {/* Expanded Details */}
-            {isExpanded && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="mt-4 pt-4 border-t border-border space-y-3"
-              >
-                <p className="text-sm text-foreground">{session.description}</p>
+            <AnimatePresence>
+              {isExpanded && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden"
+                >
+                  <div className="mt-4 pt-4 border-t border-border space-y-3">
+                    {/* Description */}
+                    <p className="text-sm text-foreground leading-relaxed">
+                      {session.description}
+                    </p>
 
-                {/* Action Buttons */}
-                <div className="flex gap-2 pt-2">
-                  <motion.button
-                    whileTap={{ scale: 0.95 }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDownloadICS();
-                    }}
-                    className="flex-1 px-3 py-2 bg-primary text-white rounded font-semibold text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
-                    data-testid={`calendar-${session.id}`}
-                  >
-                    <Download size={14} />
-                    Add to Calendar
-                  </motion.button>
-                </div>
-              </motion.div>
-            )}
+                    {/* Moderator */}
+                    {session.moderator && (
+                      <div>
+                        <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-2">
+                          Moderator
+                        </h4>
+                        <div className="flex items-center gap-2 text-sm">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <User size={14} className="text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-foreground">
+                              {session.moderator.name}
+                            </p>
+                            {session.moderator.organization && (
+                              <p className="text-xs text-muted-foreground">
+                                {session.moderator.organization}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Speakers */}
+                    {session.speakers && session.speakers.length > 0 && (
+                      <div>
+                        <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-2">
+                          Speaker{session.speakers.length > 1 ? "s" : ""}
+                        </h4>
+                        <div className="space-y-2">
+                          {session.speakers.map((speaker, idx) => (
+                            <motion.div
+                              key={idx}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: idx * 0.05 }}
+                              className="flex items-center gap-2 text-sm"
+                            >
+                              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                <User size={14} className="text-primary" />
+                              </div>
+                              <div>
+                                <p className="font-medium text-foreground">
+                                  {speaker.name}
+                                </p>
+                                {speaker.organization && (
+                                  <p className="text-xs text-muted-foreground">
+                                    {speaker.organization}
+                                  </p>
+                                )}
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Papers */}
+                    {session.papers && session.papers.length > 0 && (
+                      <div>
+                        <h4 className="text-xs font-semibold text-muted-foreground uppercase mb-2">
+                          Research Papers
+                        </h4>
+                        <div className="space-y-2">
+                          {session.papers.map((paper, idx) => (
+                            <motion.div
+                              key={idx}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: idx * 0.05 }}
+                              className="text-sm"
+                            >
+                              <p className="font-medium text-foreground leading-snug mb-1">
+                                {paper.title}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {paper.authors}
+                              </p>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action Button */}
+                    <motion.button
+                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ scale: 1.02 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDownloadICS();
+                      }}
+                      className="w-full px-4 py-2.5 bg-primary text-primary-foreground rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 shadow-sm"
+                      data-testid={`calendar-${session.id}`}
+                    >
+                      <Download size={16} />
+                      Add to Calendar
+                    </motion.button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>

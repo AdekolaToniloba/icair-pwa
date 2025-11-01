@@ -8,12 +8,12 @@ import { QuickAccessCard } from "@/components/quick-access-card";
 import { useEffect, useState } from "react";
 
 const quickAccessItems = [
-  { title: "Getting Here", emoji: "✈️", href: "/map" },
+  { title: "Getting Here", emoji: "✈️", href: "/travel-guide" },
   { title: "Where to Stay", emoji: "🏨", href: "/hotels" },
   { title: "Venue Map", emoji: "🗺️", href: "/map" },
   { title: "Schedule", emoji: "📅", href: "/schedule" },
   { title: "Where to Eat", emoji: "🍽️", href: "/hotels" },
-  { title: "Transport", emoji: "🚕", href: "/map" },
+  { title: "Transport", emoji: "🚕", href: "/travel-guide" },
 ];
 
 const container = {
