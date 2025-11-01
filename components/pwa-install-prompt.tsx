@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, Wifi, Clock, Zap, Smartphone } from "lucide-react";
+import { Download, Wifi, Clock, Zap, Smartphone, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt?: () => Promise<void>;
@@ -23,33 +31,54 @@ export function PWAInstallPrompt() {
     localStorage.setItem("pwa-page-views", String(newViews));
     setPageViews(newViews);
 
-    // Check if already installed
+    // Check if already installed or dismissed permanently
     const installed = localStorage.getItem("pwa-installed");
-    if (installed) {
+    const dismissed = localStorage.getItem("pwa-dismissed-permanently");
+
+    if (installed === "true" || dismissed === "true") {
       setIsInstalled(true);
     }
+
+    // Listen for app installation
+    const handleAppInstalled = () => {
+      console.log("[PWA] App installed successfully");
+      localStorage.setItem("pwa-installed", "true");
+      setIsInstalled(true);
+      setShowPrompt(false);
+    };
 
     // Listen for beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
+      console.log("[PWA] beforeinstallprompt event fired");
       setDeferredPrompt(e as BeforeInstallPromptEvent);
 
-      // Show prompt after 30 seconds or 2 page views
-      const timer = setTimeout(() => {
-        if (newViews >= 2 || true) {
-          setShowPrompt(true);
-        }
-      }, 30000);
+      // Reset installed flag when prompt is available (means app was uninstalled)
+      localStorage.removeItem("pwa-installed");
+      setIsInstalled(false);
 
-      return () => clearTimeout(timer);
+      // Show prompt after 30 seconds or 2 page views (unless permanently dismissed)
+      if (dismissed !== "true") {
+        const timer = setTimeout(() => {
+          if (newViews >= 2 || true) {
+            setShowPrompt(true);
+          }
+        }, 30000);
+
+        return () => clearTimeout(timer);
+      }
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-    return () =>
+    window.addEventListener("appinstalled", handleAppInstalled);
+
+    return () => {
       window.removeEventListener(
         "beforeinstallprompt",
         handleBeforeInstallPrompt
       );
+      window.removeEventListener("appinstalled", handleAppInstalled);
+    };
   }, []);
 
   const handleInstall = async () => {
@@ -58,28 +87,41 @@ export function PWAInstallPrompt() {
     try {
       await deferredPrompt.prompt?.();
       const { outcome } = await deferredPrompt.userChoice!;
+
       if (outcome === "accepted") {
+        console.log("[PWA] User accepted install prompt");
         localStorage.setItem("pwa-installed", "true");
+        localStorage.removeItem("pwa-dismissed-permanently");
         setIsInstalled(true);
         setShowPrompt(false);
+      } else {
+        console.log("[PWA] User dismissed install prompt");
       }
     } catch (error) {
-      console.error("[v0] Install error:", error);
+      console.error("[PWA] Install error:", error);
     }
   };
 
   const handleDismiss = () => {
     setShowPrompt(false);
     setDeferredPrompt(null);
+    // Store dismissal timestamp to avoid showing too frequently
+    localStorage.setItem("pwa-last-dismissed", Date.now().toString());
+  };
+
+  const handleDismissPermanently = () => {
+    setShowPrompt(false);
+    setDeferredPrompt(null);
+    localStorage.setItem("pwa-dismissed-permanently", "true");
   };
 
   if (isInstalled || !showPrompt || !deferredPrompt) return null;
 
   const benefits = [
     { icon: Wifi, label: "Works offline" },
-    { icon: Smartphone, label: "Quick access from home" },
+    { icon: Smartphone, label: "Quick home screen access" },
     { icon: Clock, label: "Session reminders" },
-    { icon: Zap, label: "Save mobile data" },
+    { icon: Zap, label: "Lightning fast" },
   ];
 
   return (
@@ -88,64 +130,115 @@ export function PWAInstallPrompt() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
-        className="fixed bottom-24 left-4 right-4 md:bottom-8 md:right-8 md:max-w-sm z-50"
+        className="fixed bottom-24 left-4 right-4 md:bottom-8 md:right-8 md:left-auto md:max-w-md z-50"
         role="dialog"
         aria-labelledby="pwa-title"
         aria-describedby="pwa-description"
       >
-        <div className="bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden">
-          <div className="bg-gradient-to-r from-[#00A651] to-green-700 p-4 text-white">
-            <h3 className="font-bold text-lg mb-2" id="pwa-title">
-              Install ICAIR Companion App
-            </h3>
-            <p className="text-sm text-green-50" id="pwa-description">
-              Get quick access to sessions, speakers, and venue info
-            </p>
-          </div>
+        <Card className="shadow-xl border-border overflow-hidden">
+          {/* Header with gradient background */}
+          <CardHeader className="bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-primary-foreground relative overflow-hidden border-b-0">
+            {/* Animated background orbs */}
+            <motion.div
+              className="absolute top-0 left-0 w-32 h-32 bg-white/10 rounded-full blur-3xl"
+              animate={{
+                x: [0, 15, -10, 0],
+                y: [0, -10, 10, 0],
+              }}
+              transition={{
+                duration: 8,
+                repeat: Number.POSITIVE_INFINITY,
+                repeatType: "loop",
+              }}
+            />
+            <motion.div
+              className="absolute bottom-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-3xl"
+              animate={{
+                x: [0, -10, 10, 0],
+                y: [0, 15, -10, 0],
+              }}
+              transition={{
+                duration: 10,
+                repeat: Number.POSITIVE_INFINITY,
+                repeatType: "loop",
+              }}
+            />
+
+            <div className="relative z-10 flex items-start justify-between">
+              <div>
+                <CardTitle className="text-xl mb-2" id="pwa-title">
+                  Install UNILAG Conference App
+                </CardTitle>
+                <CardDescription
+                  className="text-primary-foreground/90"
+                  id="pwa-description"
+                >
+                  Get quick access to sessions, speakers, and venue info
+                </CardDescription>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={handleDismissPermanently}
+                className="text-primary-foreground hover:bg-white/20 -mr-2 -mt-2"
+                aria-label="Don't show again"
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
+          </CardHeader>
 
           {/* Benefits Grid */}
-          <div className="grid grid-cols-2 gap-3 p-4">
-            {benefits.map((benefit, index) => {
-              const Icon = benefit.icon;
-              return (
-                <motion.div
-                  key={benefit.label}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="flex items-center gap-2"
-                >
-                  <Icon
-                    className="w-4 h-4 text-[#00A651] flex-shrink-0"
-                    aria-hidden="true"
-                  />
-                  <span className="text-xs text-gray-700">{benefit.label}</span>
-                </motion.div>
-              );
-            })}
-          </div>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              {benefits.map((benefit, index) => {
+                const Icon = benefit.icon;
+                return (
+                  <motion.div
+                    key={benefit.label}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-center gap-2"
+                  >
+                    <div className="flex items-center justify-center size-8 rounded-lg bg-primary/10">
+                      <Icon
+                        className="size-4 text-primary flex-shrink-0"
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <span className="text-sm text-foreground font-medium">
+                      {benefit.label}
+                    </span>
+                  </motion.div>
+                );
+              })}
+            </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-2 p-4 pt-2 border-t border-gray-100">
-            <button
-              onClick={handleDismiss}
-              className="flex-1 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded transition-colors"
-              aria-label="Dismiss install prompt"
-            >
-              Not now
-            </button>
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={handleInstall}
-              data-testid="pwa-install-prompt"
-              className="flex-1 px-3 py-2 text-sm font-medium bg-[#00A651] text-white rounded hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
-              aria-label="Install ICAIR Companion App"
-            >
-              <Download className="w-4 h-4" aria-hidden="true" />
-              Install
-            </motion.button>
-          </div>
-        </div>
+            {/* Action Buttons */}
+            <div className="flex gap-3 pt-2">
+              <Button
+                variant="outline"
+                onClick={handleDismiss}
+                className="flex-1"
+                aria-label="Dismiss install prompt"
+              >
+                Not now
+              </Button>
+              <motion.div whileTap={{ scale: 0.95 }} className="flex-1">
+                <Button
+                  onClick={handleInstall}
+                  data-testid="pwa-install-prompt"
+                  className="w-full gap-2"
+                  aria-label="Install UNILAG Conference App"
+                >
+                  <Download className="size-4" aria-hidden="true" />
+                  Install
+                </Button>
+              </motion.div>
+            </div>
+          </CardContent>
+        </Card>
       </motion.div>
     </AnimatePresence>
   );

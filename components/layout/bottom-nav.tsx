@@ -24,7 +24,6 @@ const navItems: NavItem[] = [
   { id: "home", label: "Home", icon: Home, href: "/" },
   { id: "schedule", label: "Schedule", icon: Calendar, href: "/schedule" },
   { id: "speakers", label: "Speakers", icon: Award, href: "/speakers" },
-  { id: "travel", label: "Travel", icon: Plane, href: "/travel-guide" },
   { id: "map", label: "Map", icon: MapPin, href: "/map" },
   { id: "more", label: "More", icon: MoreHorizontal, href: "/more" },
 ];
