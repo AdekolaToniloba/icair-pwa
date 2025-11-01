@@ -1,12 +1,12 @@
 "use client";
 
-import HomePage from "@/components/pages/home-page";
+import MorePage from "@/components/pages/more-page";
 import { UnifiedPageWrapper } from "@/components/unified-page-wrapper";
 
-export default function Home() {
+export default function More() {
   return (
     <UnifiedPageWrapper>
-      <HomePage />
+      <MorePage />
     </UnifiedPageWrapper>
   );
 }

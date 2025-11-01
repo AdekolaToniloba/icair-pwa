@@ -1,11 +1,12 @@
-"use client"
+// code/components/pages/home-page.tsx
+"use client";
 
-import { motion } from "framer-motion"
-import { CountdownTimer } from "@/components/countdown-timer"
-import { WeatherWidget } from "@/components/weather-widget"
-import { EmergencyFAB } from "@/components/emergency-fab"
-import { QuickAccessCard } from "@/components/quick-access-card"
-import { useEffect, useState } from "react"
+import { motion } from "framer-motion";
+import { CountdownTimer } from "@/components/countdown-timer";
+import { WeatherWidget } from "@/components/weather-widget";
+import { EmergencyFAB } from "@/components/emergency-fab";
+import { QuickAccessCard } from "@/components/quick-access-card";
+import { useEffect, useState } from "react";
 
 const quickAccessItems = [
   { title: "Getting Here", emoji: "✈️", href: "/map" },
@@ -14,7 +15,7 @@ const quickAccessItems = [
   { title: "Schedule", emoji: "📅", href: "/schedule" },
   { title: "Where to Eat", emoji: "🍽️", href: "/hotels" },
   { title: "Transport", emoji: "🚕", href: "/map" },
-]
+];
 
 const container = {
   hidden: { opacity: 0 },
@@ -25,33 +26,38 @@ const container = {
       delayChildren: 0.2,
     },
   },
-}
+};
 
 const item = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0 },
-}
+};
 
 export default function HomePage() {
-  const [scrollY, setScrollY] = useState(0)
+  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
     const handleScroll = (e: Event) => {
-      const target = e.target as HTMLElement
-      setScrollY(target.scrollTop || 0)
-    }
+      const target = e.target as HTMLElement;
+      setScrollY(target.scrollTop || 0);
+    };
 
-    const mainElement = document.querySelector("main")
+    const mainElement = document.querySelector("main");
     if (mainElement) {
-      mainElement.addEventListener("scroll", handleScroll)
-      return () => mainElement.removeEventListener("scroll", handleScroll)
+      mainElement.addEventListener("scroll", handleScroll);
+      return () => mainElement.removeEventListener("scroll", handleScroll);
     }
-  }, [])
+  }, []);
 
-  const conferenceDate = new Date("2025-11-04T09:00:00")
+  const conferenceDate = new Date("2025-11-04T09:00:00");
 
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="px-4 py-6 sm:px-6 sm:py-8 space-y-6">
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="px-4 py-6 sm:px-6 sm:py-8 space-y-6"
+    >
       {/* Hero Section with Parallax */}
       <motion.div
         variants={item}
@@ -94,7 +100,7 @@ export default function HomePage() {
               className="text-3xl font-bold mb-2"
               data-testid="hero-title"
             >
-              Welcome to UNILAG
+              Welcome to ICAIR 2025!
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 10 }}
@@ -116,7 +122,10 @@ export default function HomePage() {
 
       {/* Quick Access Grid */}
       <motion.div variants={item}>
-        <h3 className="text-lg font-bold mb-4 text-foreground" data-testid="quick-access-title">
+        <h3
+          className="text-lg font-bold mb-4 text-foreground"
+          data-testid="quick-access-title"
+        >
           Quick Access
         </h3>
         <div className="grid grid-cols-2 gap-4">
@@ -134,7 +143,9 @@ export default function HomePage() {
 
       {/* Featured Updates Section */}
       <motion.div variants={item}>
-        <h3 className="text-lg font-bold mb-4 text-foreground">Latest Updates</h3>
+        <h3 className="text-lg font-bold mb-4 text-foreground">
+          Latest Updates
+        </h3>
         <div className="space-y-3">
           {[
             {
@@ -144,12 +155,14 @@ export default function HomePage() {
             },
             {
               title: "Keynote Speakers Announced",
-              description: "Join industry leaders for inspiring talks and discussions",
+              description:
+                "Join industry leaders for inspiring talks and discussions",
               icon: "🎤",
             },
             {
               title: "Conference Schedule Released",
-              description: "Browse all sessions and plan your conference journey",
+              description:
+                "Browse all sessions and plan your conference journey",
               icon: "📋",
             },
           ].map((update, idx) => (
@@ -168,7 +181,9 @@ export default function HomePage() {
                   <p className="font-semibold text-foreground group-hover:text-primary transition-colors">
                     {update.title}
                   </p>
-                  <p className="text-sm text-muted-foreground">{update.description}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {update.description}
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -179,5 +194,5 @@ export default function HomePage() {
       {/* Emergency FAB */}
       <EmergencyFAB />
     </motion.div>
-  )
+  );
 }

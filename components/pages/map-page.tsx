@@ -1,9 +1,10 @@
-"use client"
+// code/components/pages/map-page.tsx
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin,
   Navigation,
@@ -15,26 +16,26 @@ import {
   ChevronDown,
   ZoomIn,
   ZoomOut,
-} from "lucide-react"
+} from "lucide-react";
 
 interface PointOfInterest {
-  id: string
-  name: string
-  icon: React.ElementType
-  color: string
-  description: string
+  id: string;
+  name: string;
+  icon: React.ElementType;
+  color: string;
+  description: string;
 }
 
 interface Room {
-  id: string
-  name: string
-  x: number
-  y: number
-  width: number
-  height: number
-  capacity: number
-  currentSession?: string
-  nextSession?: string
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  capacity: number;
+  currentSession?: string;
+  nextSession?: string;
 }
 
 const pointsOfInterest: PointOfInterest[] = [
@@ -66,7 +67,7 @@ const pointsOfInterest: PointOfInterest[] = [
     color: "#10B981",
     description: "Free WiFi access throughout campus",
   },
-]
+];
 
 const rooms: Room[] = [
   {
@@ -119,7 +120,7 @@ const rooms: Room[] = [
     capacity: 50,
     currentSession: "Networking Session",
   },
-]
+];
 
 const container = {
   hidden: { opacity: 0 },
@@ -130,29 +131,37 @@ const container = {
       delayChildren: 0.1,
     },
   },
-}
+};
 
 const item = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0 },
-}
+};
 
 export default function MapPage() {
-  const [activeTab, setActiveTab] = useState<"campus" | "floor">("campus")
-  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null)
-  const [expandedPOI, setExpandedPOI] = useState<string | null>(null)
-  const [zoom, setZoom] = useState(1)
+  const [activeTab, setActiveTab] = useState<"campus" | "floor">("campus");
+  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+  const [expandedPOI, setExpandedPOI] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(1);
 
   const handleZoom = (direction: "in" | "out") => {
     setZoom((prev) => {
-      if (direction === "in") return Math.min(prev + 0.2, 2)
-      return Math.max(prev - 0.2, 0.6)
-    })
-  }
+      if (direction === "in") return Math.min(prev + 0.2, 2);
+      return Math.max(prev - 0.2, 0.6);
+    });
+  };
 
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="px-4 py-6 sm:px-6 sm:py-8 pb-24">
-      <h2 className="text-2xl font-bold mb-6 text-foreground" data-testid="map-title">
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="px-4 py-6 sm:px-6 sm:py-8 pb-24"
+    >
+      <h2
+        className="text-2xl font-bold mb-6 text-foreground"
+        data-testid="map-title"
+      >
         Venue Navigation
       </h2>
 
@@ -192,10 +201,20 @@ export default function MapPage() {
             data-testid="venue-map"
           >
             <div className="relative w-full bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl border-2 border-primary/20 p-4 overflow-hidden">
-              <svg viewBox="0 0 500 400" className="w-full h-auto" style={{ aspectRatio: "5/4" }}>
+              <svg
+                viewBox="0 0 500 400"
+                className="w-full h-auto"
+                style={{ aspectRatio: "5/4" }}
+              >
                 {/* Background */}
                 <defs>
-                  <linearGradient id="campusGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <linearGradient
+                    id="campusGrad"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
                     <stop offset="0%" stopColor="#F0FDF4" />
                     <stop offset="100%" stopColor="#E0F2FE" />
                   </linearGradient>
@@ -208,32 +227,93 @@ export default function MapPage() {
                   transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
                 >
                   {/* Main Venue */}
-                  <rect x="50" y="50" width="150" height="120" fill="#00A651" opacity="0.2" rx="8" />
-                  <text x="125" y="115" textAnchor="middle" className="text-sm font-bold fill-primary">
+                  <rect
+                    x="50"
+                    y="50"
+                    width="150"
+                    height="120"
+                    fill="#00A651"
+                    opacity="0.2"
+                    rx="8"
+                  />
+                  <text
+                    x="125"
+                    y="115"
+                    textAnchor="middle"
+                    className="text-sm font-bold fill-primary"
+                  >
                     Conference Venue
                   </text>
 
                   {/* Hotels Zone */}
-                  <rect x="280" y="60" width="140" height="100" fill="#FDB913" opacity="0.2" rx="8" />
-                  <text x="350" y="120" textAnchor="middle" className="text-sm font-bold fill-yellow-600">
+                  <rect
+                    x="280"
+                    y="60"
+                    width="140"
+                    height="100"
+                    fill="#FDB913"
+                    opacity="0.2"
+                    rx="8"
+                  />
+                  <text
+                    x="350"
+                    y="120"
+                    textAnchor="middle"
+                    className="text-sm font-bold fill-yellow-600"
+                  >
                     Hotels Zone
                   </text>
 
                   {/* Restaurants */}
-                  <circle cx="80" cy="250" r="40" fill="#F59E0B" opacity="0.2" />
-                  <text x="80" y="260" textAnchor="middle" className="text-xs font-bold fill-orange-600">
+                  <circle
+                    cx="80"
+                    cy="250"
+                    r="40"
+                    fill="#F59E0B"
+                    opacity="0.2"
+                  />
+                  <text
+                    x="80"
+                    y="260"
+                    textAnchor="middle"
+                    className="text-xs font-bold fill-orange-600"
+                  >
                     Restaurants
                   </text>
 
                   {/* Parking */}
-                  <rect x="280" y="230" width="100" height="80" fill="#6B7280" opacity="0.2" rx="8" />
-                  <text x="330" y="280" textAnchor="middle" className="text-xs font-bold fill-gray-600">
+                  <rect
+                    x="280"
+                    y="230"
+                    width="100"
+                    height="80"
+                    fill="#6B7280"
+                    opacity="0.2"
+                    rx="8"
+                  />
+                  <text
+                    x="330"
+                    y="280"
+                    textAnchor="middle"
+                    className="text-xs font-bold fill-gray-600"
+                  >
                     Parking
                   </text>
 
                   {/* ATMs */}
-                  <circle cx="420" cy="200" r="35" fill="#3B82F6" opacity="0.2" />
-                  <text x="420" y="210" textAnchor="middle" className="text-xs font-bold fill-blue-600">
+                  <circle
+                    cx="420"
+                    cy="200"
+                    r="35"
+                    fill="#3B82F6"
+                    opacity="0.2"
+                  />
+                  <text
+                    x="420"
+                    y="210"
+                    textAnchor="middle"
+                    className="text-xs font-bold fill-blue-600"
+                  >
                     ATMs
                   </text>
                 </motion.g>
@@ -243,8 +323,22 @@ export default function MapPage() {
                   animate={{ scale: [1, 1.3, 1] }}
                   transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
                 >
-                  <circle cx="250" cy="200" r="8" fill="#00A651" opacity="0.8" />
-                  <circle cx="250" cy="200" r="12" fill="none" stroke="#00A651" strokeWidth="2" opacity="0.4" />
+                  <circle
+                    cx="250"
+                    cy="200"
+                    r="8"
+                    fill="#00A651"
+                    opacity="0.8"
+                  />
+                  <circle
+                    cx="250"
+                    cy="200"
+                    r="12"
+                    fill="none"
+                    stroke="#00A651"
+                    strokeWidth="2"
+                    opacity="0.4"
+                  />
                 </motion.g>
               </svg>
 
@@ -256,10 +350,14 @@ export default function MapPage() {
                 className="mt-4 bg-card/50 backdrop-blur-sm border border-border rounded-lg p-4"
               >
                 <p className="text-sm text-muted-foreground">
-                  <span className="font-semibold text-foreground">Campus Coordinates:</span> 6.5195°N, 3.3989°E
+                  <span className="font-semibold text-foreground">
+                    Campus Coordinates:
+                  </span>{" "}
+                  6.5195°N, 3.3989°E
                 </p>
                 <p className="text-sm text-muted-foreground mt-2">
-                  You are currently viewing the Unilag campus map. Tap on zones for more details.
+                  You are currently viewing the Unilag campus map. Tap on zones
+                  for more details.
                 </p>
               </motion.div>
             </div>
@@ -310,7 +408,13 @@ export default function MapPage() {
                   }}
                 >
                   {/* Floor background */}
-                  <rect width="520" height="260" fill="#F8F9FA" stroke="#D1D5DB" strokeWidth="2" />
+                  <rect
+                    width="520"
+                    height="260"
+                    fill="#F8F9FA"
+                    stroke="#D1D5DB"
+                    strokeWidth="2"
+                  />
 
                   {rooms.map((room) => (
                     <motion.g
@@ -325,7 +429,9 @@ export default function MapPage() {
                         width={room.width}
                         height={room.height}
                         fill={room.currentSession ? "#10B981" : "#E5E7EB"}
-                        stroke={selectedRoom?.id === room.id ? "#00A651" : "#9CA3AF"}
+                        stroke={
+                          selectedRoom?.id === room.id ? "#00A651" : "#9CA3AF"
+                        }
                         strokeWidth={selectedRoom?.id === room.id ? "3" : "2"}
                         rx="4"
                       />
@@ -350,13 +456,28 @@ export default function MapPage() {
 
                   {/* Emergency Exits (red) */}
                   <circle cx="30" cy="30" r="6" fill="#EF4444" />
-                  <text x="40" y="35" className="text-xs fill-red-600 font-semibold">
+                  <text
+                    x="40"
+                    y="35"
+                    className="text-xs fill-red-600 font-semibold"
+                  >
                     Emergency Exit
                   </text>
 
                   {/* Accessibility Paths (blue) */}
-                  <line x1="400" y1="10" x2="480" y2="10" stroke="#3B82F6" strokeWidth="4" />
-                  <text x="400" y="28" className="text-xs fill-blue-600 font-semibold">
+                  <line
+                    x1="400"
+                    y1="10"
+                    x2="480"
+                    y2="10"
+                    stroke="#3B82F6"
+                    strokeWidth="4"
+                  />
+                  <text
+                    x="400"
+                    y="28"
+                    className="text-xs fill-blue-600 font-semibold"
+                  >
                     Accessibility Path
                   </text>
                 </svg>
@@ -373,8 +494,12 @@ export default function MapPage() {
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <h3 className="font-bold text-foreground text-lg">{selectedRoom.name}</h3>
-                        <p className="text-sm text-muted-foreground">Capacity: {selectedRoom.capacity} people</p>
+                        <h3 className="font-bold text-foreground text-lg">
+                          {selectedRoom.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          Capacity: {selectedRoom.capacity} people
+                        </p>
                       </div>
                       <motion.button
                         whileTap={{ scale: 0.9 }}
@@ -387,21 +512,32 @@ export default function MapPage() {
 
                     {selectedRoom.currentSession && (
                       <div className="bg-green-50 border border-green-200 rounded p-3 mb-3">
-                        <p className="text-xs font-semibold text-green-700">CURRENTLY IN SESSION</p>
-                        <p className="text-sm text-green-600">{selectedRoom.currentSession}</p>
+                        <p className="text-xs font-semibold text-green-700">
+                          CURRENTLY IN SESSION
+                        </p>
+                        <p className="text-sm text-green-600">
+                          {selectedRoom.currentSession}
+                        </p>
                       </div>
                     )}
 
                     {selectedRoom.nextSession && (
                       <div className="bg-blue-50 border border-blue-200 rounded p-3">
-                        <p className="text-xs font-semibold text-blue-700">NEXT SESSION</p>
-                        <p className="text-sm text-blue-600">{selectedRoom.nextSession}</p>
+                        <p className="text-xs font-semibold text-blue-700">
+                          NEXT SESSION
+                        </p>
+                        <p className="text-sm text-blue-600">
+                          {selectedRoom.nextSession}
+                        </p>
                       </div>
                     )}
 
-                    {!selectedRoom.currentSession && !selectedRoom.nextSession && (
-                      <p className="text-sm text-muted-foreground italic">No sessions scheduled at this time.</p>
-                    )}
+                    {!selectedRoom.currentSession &&
+                      !selectedRoom.nextSession && (
+                        <p className="text-sm text-muted-foreground italic">
+                          No sessions scheduled at this time.
+                        </p>
+                      )}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -412,11 +548,13 @@ export default function MapPage() {
 
       {/* Points of Interest Sidebar */}
       <motion.div variants={item} className="mt-6">
-        <h3 className="text-lg font-bold mb-4 text-foreground">Points of Interest</h3>
+        <h3 className="text-lg font-bold mb-4 text-foreground">
+          Points of Interest
+        </h3>
         <div className="space-y-3">
           {pointsOfInterest.map((poi) => {
-            const Icon = poi.icon
-            const isExpanded = expandedPOI === poi.id
+            const Icon = poi.icon;
+            const isExpanded = expandedPOI === poi.id;
 
             return (
               <motion.div
@@ -426,17 +564,32 @@ export default function MapPage() {
                 className="bg-card border border-border rounded-lg overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
                 data-testid={`poi-${poi.id}`}
               >
-                <motion.div layout className="p-4 flex items-center justify-between">
+                <motion.div
+                  layout
+                  className="p-4 flex items-center justify-between"
+                >
                   <div className="flex items-center gap-3">
-                    <motion.div animate={{ scale: isExpanded ? 1.1 : 1 }} style={{ color: poi.color }}>
+                    <motion.div
+                      animate={{ scale: isExpanded ? 1.1 : 1 }}
+                      style={{ color: poi.color }}
+                    >
                       <Icon size={24} />
                     </motion.div>
                     <div>
-                      <p className="font-semibold text-foreground">{poi.name}</p>
-                      {!isExpanded && <p className="text-xs text-muted-foreground">{poi.description}</p>}
+                      <p className="font-semibold text-foreground">
+                        {poi.name}
+                      </p>
+                      {!isExpanded && (
+                        <p className="text-xs text-muted-foreground">
+                          {poi.description}
+                        </p>
+                      )}
                     </div>
                   </div>
-                  <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.3 }}>
+                  <motion.div
+                    animate={{ rotate: isExpanded ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
                     <ChevronDown size={20} className="text-muted-foreground" />
                   </motion.div>
                 </motion.div>
@@ -449,7 +602,9 @@ export default function MapPage() {
                       exit={{ opacity: 0, height: 0 }}
                       className="px-4 pb-4 border-t border-border"
                     >
-                      <p className="text-sm text-muted-foreground">{poi.description}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {poi.description}
+                      </p>
                       <motion.button
                         whileTap={{ scale: 0.95 }}
                         className="mt-3 w-full bg-primary/10 hover:bg-primary/20 text-primary font-semibold py-2 rounded-lg transition-colors"
@@ -461,7 +616,7 @@ export default function MapPage() {
                   )}
                 </AnimatePresence>
               </motion.div>
-            )
+            );
           })}
         </div>
       </motion.div>
@@ -483,5 +638,5 @@ export default function MapPage() {
         </div>
       </motion.div>
     </motion.div>
-  )
+  );
 }

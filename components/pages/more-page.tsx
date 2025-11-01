@@ -1,16 +1,48 @@
-"use client"
+// code/components/pages/more-page.tsx
+"use client";
 
-import { motion } from "framer-motion"
-import { Settings, HelpCircle, Share2, Award, FileText, Bell } from "lucide-react"
+import { motion } from "framer-motion";
+import {
+  Settings,
+  HelpCircle,
+  Share2,
+  Award,
+  FileText,
+  Bell,
+} from "lucide-react";
 
 const menuItems = [
-  { icon: FileText, label: "About Conference", description: "Learn more about UNILAG 2025" },
-  { icon: Award, label: "Speakers", description: "Meet our distinguished speakers" },
-  { icon: Share2, label: "Share", description: "Invite friends to the conference" },
-  { icon: Bell, label: "Notifications", description: "Manage your alerts and reminders" },
-  { icon: HelpCircle, label: "Help & Support", description: "Get assistance and FAQ" },
-  { icon: Settings, label: "Settings", description: "Configure your preferences" },
-]
+  {
+    icon: FileText,
+    label: "About Conference",
+    description: "Learn more about ICAIR 2025",
+  },
+  {
+    icon: Award,
+    label: "Speakers",
+    description: "Meet our distinguished speakers",
+  },
+  {
+    icon: Share2,
+    label: "Share",
+    description: "Invite friends to the conference",
+  },
+  {
+    icon: Bell,
+    label: "Notifications",
+    description: "Manage your alerts and reminders",
+  },
+  {
+    icon: HelpCircle,
+    label: "Help & Support",
+    description: "Get assistance and FAQ",
+  },
+  {
+    icon: Settings,
+    label: "Settings",
+    description: "Configure your preferences",
+  },
+];
 
 const container = {
   hidden: { opacity: 0 },
@@ -21,23 +53,31 @@ const container = {
       delayChildren: 0.1,
     },
   },
-}
+};
 
 const item = {
   hidden: { opacity: 0, x: -20 },
   show: { opacity: 1, x: 0 },
-}
+};
 
 export default function MorePage() {
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="px-4 py-6 sm:px-6 sm:py-8">
-      <h2 className="text-2xl font-bold mb-6 text-foreground" data-testid="more-title">
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="px-4 py-6 sm:px-6 sm:py-8"
+    >
+      <h2
+        className="text-2xl font-bold mb-6 text-foreground"
+        data-testid="more-title"
+      >
         More Options
       </h2>
 
       <div className="space-y-3">
         {menuItems.map((item, idx) => {
-          const Icon = item.icon
+          const Icon = item.icon;
           return (
             <motion.button
               key={idx}
@@ -53,25 +93,30 @@ export default function MorePage() {
                 </div>
                 <div className="flex-1">
                   <p className="font-semibold text-foreground">{item.label}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {item.description}
+                  </p>
                 </div>
-                <motion.div animate={{ x: [0, 4, 0] }} transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}>
+                <motion.div
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+                >
                   <span className="text-muted-foreground">→</span>
                 </motion.div>
               </div>
             </motion.button>
-          )
+          );
         })}
       </div>
 
       {/* Footer Info */}
       <motion.div variants={item} className="mt-8 pt-6 border-t border-border">
         <p className="text-center text-xs text-muted-foreground">
-          UNILAG Conference 2025
+          ICAIR Conference 2025
           <br />
-          Version 1.0.0 • Built with excellence
+          Version 1.0.0 • Built with ❤️ by Nithub Unilag
         </p>
       </motion.div>
     </motion.div>
-  )
+  );
 }

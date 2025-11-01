@@ -1,12 +1,13 @@
 "use client";
 
-import HomePage from "@/components/pages/home-page";
+import TravelGuidePage from "@/components/pages/travel-guide-page";
+
 import { UnifiedPageWrapper } from "@/components/unified-page-wrapper";
 
-export default function Home() {
+export default function Schedule() {
   return (
     <UnifiedPageWrapper>
-      <HomePage />
+      <TravelGuidePage />
     </UnifiedPageWrapper>
   );
 }

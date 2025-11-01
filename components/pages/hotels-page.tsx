@@ -1,21 +1,29 @@
-"use client"
+// code/components/pages/hotels-page.tsx
+"use client";
 
-import { motion, AnimatePresence } from "framer-motion"
-import { Star, MapPin, Phone, MessageCircle, ChevronDown, Check } from "lucide-react"
-import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Star,
+  MapPin,
+  Phone,
+  MessageCircle,
+  ChevronDown,
+  Check,
+} from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface Hotel {
-  id: string
-  name: string
-  distance: string
-  price: number
-  rating: number
-  image?: string
-  roomTypes?: string[]
-  whatsapp?: string
-  discountBadge?: string
-  discountPrice?: number
-  featured?: boolean
+  id: string;
+  name: string;
+  distance: string;
+  price: number;
+  rating: number;
+  image?: string;
+  roomTypes?: string[];
+  whatsapp?: string;
+  discountBadge?: string;
+  discountPrice?: number;
+  featured?: boolean;
 }
 
 const hotelsData: Hotel[] = [
@@ -52,7 +60,7 @@ const hotelsData: Hotel[] = [
     price: 12000,
     rating: 4.0,
   },
-]
+];
 
 const container = {
   hidden: { opacity: 0 },
@@ -63,67 +71,94 @@ const container = {
       delayChildren: 0.1,
     },
   },
-}
+};
 
 const item = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0 },
-}
+};
 
 export default function HotelsPage() {
-  const [hotels, setHotels] = useState<Hotel[]>(hotelsData)
-  const [priceRange, setPriceRange] = useState(20000)
-  const [maxDistance, setMaxDistance] = useState(20)
-  const [sortBy, setSortBy] = useState("rating")
-  const [showComparison, setShowComparison] = useState(false)
-  const [selectedHotels, setSelectedHotels] = useState<string[]>([])
-  const [expandedHotel, setExpandedHotel] = useState<string | null>(null)
+  const [hotels, setHotels] = useState<Hotel[]>(hotelsData);
+  const [priceRange, setPriceRange] = useState(20000);
+  const [maxDistance, setMaxDistance] = useState(20);
+  const [sortBy, setSortBy] = useState("rating");
+  const [showComparison, setShowComparison] = useState(false);
+  const [selectedHotels, setSelectedHotels] = useState<string[]>([]);
+  const [expandedHotel, setExpandedHotel] = useState<string | null>(null);
 
   useEffect(() => {
     const filtered = hotelsData.filter((hotel) => {
-      const distance = Number.parseInt(hotel.distance)
-      return hotel.price <= priceRange && distance <= maxDistance
-    })
+      const distance = Number.parseInt(hotel.distance);
+      return hotel.price <= priceRange && distance <= maxDistance;
+    });
 
     // Sort based on selected option
     if (sortBy === "price") {
-      filtered.sort((a, b) => a.price - b.price)
+      filtered.sort((a, b) => a.price - b.price);
     } else if (sortBy === "distance") {
-      filtered.sort((a, b) => Number.parseInt(a.distance) - Number.parseInt(b.distance))
+      filtered.sort(
+        (a, b) => Number.parseInt(a.distance) - Number.parseInt(b.distance)
+      );
     } else if (sortBy === "rating") {
-      filtered.sort((a, b) => b.rating - a.rating)
+      filtered.sort((a, b) => b.rating - a.rating);
     }
 
-    setHotels(filtered)
-  }, [priceRange, maxDistance, sortBy])
+    setHotels(filtered);
+  }, [priceRange, maxDistance, sortBy]);
 
   const toggleHotelSelection = (hotelId: string) => {
-    setSelectedHotels((prev) => (prev.includes(hotelId) ? prev.filter((id) => id !== hotelId) : [...prev, hotelId]))
-  }
+    setSelectedHotels((prev) =>
+      prev.includes(hotelId)
+        ? prev.filter((id) => id !== hotelId)
+        : [...prev, hotelId]
+    );
+  };
 
-  const comparisonHotels = hotelsData.filter((h) => selectedHotels.includes(h.id))
+  const comparisonHotels = hotelsData.filter((h) =>
+    selectedHotels.includes(h.id)
+  );
 
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="px-4 py-6 sm:px-6 sm:py-8 pb-8">
-      <h2 className="text-2xl font-bold mb-6 text-foreground" data-testid="hotels-title">
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="px-4 py-6 sm:px-6 sm:py-8 pb-8"
+    >
+      <h2
+        className="text-2xl font-bold mb-6 text-foreground"
+        data-testid="hotels-title"
+      >
         Where to Stay
       </h2>
 
       {/* Featured Hotel Section */}
       {hotelsData.find((h) => h.featured) && (
         <motion.div variants={item} className="mb-8">
-          <h3 className="text-sm font-semibold text-primary mb-3 uppercase tracking-wider">Featured Hotel</h3>
-          <FeaturedHotelCard hotel={hotelsData.find((h) => h.featured)!} onSelect={toggleHotelSelection} />
+          <h3 className="text-sm font-semibold text-primary mb-3 uppercase tracking-wider">
+            Featured Hotel
+          </h3>
+          <FeaturedHotelCard
+            hotel={hotelsData.find((h) => h.featured)!}
+            onSelect={toggleHotelSelection}
+          />
         </motion.div>
       )}
 
       {/* Filter Section */}
-      <motion.div variants={item} className="bg-card rounded-lg border border-border p-4 mb-6">
+      <motion.div
+        variants={item}
+        className="bg-card rounded-lg border border-border p-4 mb-6"
+      >
         <h3 className="font-bold text-foreground mb-4">Filters & Sort</h3>
 
         {/* Price Range Slider */}
         <div className="mb-4">
-          <label htmlFor="price-slider" className="text-sm font-medium text-foreground mb-2 block">
+          <label
+            htmlFor="price-slider"
+            className="text-sm font-medium text-foreground mb-2 block"
+          >
             Price: ₦{priceRange.toLocaleString()}
           </label>
           <input
@@ -144,7 +179,10 @@ export default function HotelsPage() {
 
         {/* Distance Filter */}
         <div className="mb-4">
-          <label htmlFor="distance-slider" className="text-sm font-medium text-foreground mb-2 block">
+          <label
+            htmlFor="distance-slider"
+            className="text-sm font-medium text-foreground mb-2 block"
+          >
             Distance: {maxDistance} min
           </label>
           <input
@@ -165,7 +203,9 @@ export default function HotelsPage() {
 
         {/* Sort Options */}
         <div>
-          <label className="text-sm font-medium text-foreground mb-2 block">Sort By</label>
+          <label className="text-sm font-medium text-foreground mb-2 block">
+            Sort By
+          </label>
           <div className="flex gap-2 flex-wrap">
             {[
               { value: "rating", label: "Rating" },
@@ -177,7 +217,9 @@ export default function HotelsPage() {
                 onClick={() => setSortBy(option.value)}
                 whileTap={{ scale: 0.95 }}
                 className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
-                  sortBy === option.value ? "bg-primary text-white" : "bg-primary/10 text-primary hover:bg-primary/20"
+                  sortBy === option.value
+                    ? "bg-primary text-white"
+                    : "bg-primary/10 text-primary hover:bg-primary/20"
                 }`}
                 data-testid={`sort-${option.value}`}
                 aria-pressed={sortBy === option.value}
@@ -195,15 +237,22 @@ export default function HotelsPage() {
           className="mt-4 w-full px-3 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 font-medium text-sm transition-all"
           data-testid="toggle-comparison"
           aria-expanded={showComparison}
-          aria-label={`${showComparison ? "Hide" : "Show"} hotel comparison (${selectedHotels.length} selected)`}
+          aria-label={`${showComparison ? "Hide" : "Show"} hotel comparison (${
+            selectedHotels.length
+          } selected)`}
         >
-          {showComparison ? "Hide Comparison" : "Show Comparison"} ({selectedHotels.length})
+          {showComparison ? "Hide Comparison" : "Show Comparison"} (
+          {selectedHotels.length})
         </motion.button>
       </motion.div>
 
       {/* Hotels List */}
       <motion.div variants={item} className="mb-8">
-        <p className="text-sm text-muted-foreground mb-4" role="status" aria-live="polite">
+        <p
+          className="text-sm text-muted-foreground mb-4"
+          role="status"
+          aria-live="polite"
+        >
           {hotels.length} hotels found
         </p>
         <div className="space-y-3">
@@ -215,7 +264,9 @@ export default function HotelsPage() {
               isSelected={selectedHotels.includes(hotel.id)}
               onSelect={toggleHotelSelection}
               isExpanded={expandedHotel === hotel.id}
-              onToggleExpand={() => setExpandedHotel(expandedHotel === hotel.id ? null : hotel.id)}
+              onToggleExpand={() =>
+                setExpandedHotel(expandedHotel === hotel.id ? null : hotel.id)
+              }
               showComparison={showComparison}
             />
           ))}
@@ -224,17 +275,21 @@ export default function HotelsPage() {
 
       {/* Comparison Section */}
       <AnimatePresence>
-        {showComparison && comparisonHotels.length > 0 && <ComparisonSection hotels={comparisonHotels} />}
+        {showComparison && comparisonHotels.length > 0 && (
+          <ComparisonSection hotels={comparisonHotels} />
+        )}
       </AnimatePresence>
 
       {/* Loading Skeleton */}
       {hotels.length === 0 && (
         <motion.div variants={item} className="text-center py-8">
-          <p className="text-muted-foreground">No hotels match your filters. Try adjusting them.</p>
+          <p className="text-muted-foreground">
+            No hotels match your filters. Try adjusting them.
+          </p>
         </motion.div>
       )}
     </motion.div>
-  )
+  );
 }
 
 // Featured Hotel Card Component
@@ -242,13 +297,13 @@ function FeaturedHotelCard({
   hotel,
   onSelect,
 }: {
-  hotel: Hotel
-  onSelect: (id: string) => void
+  hotel: Hotel;
+  onSelect: (id: string) => void;
 }) {
-  const [imageLoaded, setImageLoaded] = useState(false)
-  const [currentImageIdx, setCurrentImageIdx] = useState(0)
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [currentImageIdx, setCurrentImageIdx] = useState(0);
 
-  const roomImages = ["/luxury-hotel-room.png", "/modern-bedroom.png"]
+  const roomImages = ["/luxury-hotel-room.png", "/modern-bedroom.png"];
 
   return (
     <motion.div
@@ -302,7 +357,9 @@ function FeaturedHotelCard({
         <div className="flex justify-between items-start mb-3">
           <div>
             <h3 className="text-lg font-bold text-foreground">{hotel.name}</h3>
-            <p className="text-xs text-muted-foreground">{hotel.distance} walk from venue</p>
+            <p className="text-xs text-muted-foreground">
+              {hotel.distance} walk from venue
+            </p>
           </div>
           <motion.button
             onClick={() => onSelect(hotel.id)}
@@ -320,28 +377,43 @@ function FeaturedHotelCard({
             <Star
               key={i}
               size={16}
-              className={i < Math.floor(hotel.rating) ? "fill-secondary text-secondary" : "text-muted-foreground"}
+              className={
+                i < Math.floor(hotel.rating)
+                  ? "fill-secondary text-secondary"
+                  : "text-muted-foreground"
+              }
             />
           ))}
-          <span className="text-sm font-semibold text-foreground">{hotel.rating}</span>
+          <span className="text-sm font-semibold text-foreground">
+            {hotel.rating}
+          </span>
         </div>
 
         {/* Price */}
         <div className="mb-4 p-3 bg-primary/5 rounded-lg">
           <p className="text-xs text-muted-foreground">Conference Rate</p>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-primary">₦{hotel.discountPrice?.toLocaleString()}</span>
-            <span className="text-sm line-through text-muted-foreground">₦{hotel.price.toLocaleString()}</span>
+            <span className="text-2xl font-bold text-primary">
+              ₦{hotel.discountPrice?.toLocaleString()}
+            </span>
+            <span className="text-sm line-through text-muted-foreground">
+              ₦{hotel.price.toLocaleString()}
+            </span>
           </div>
         </div>
 
         {/* Room Types */}
         {hotel.roomTypes && (
           <div className="mb-4">
-            <p className="text-xs font-semibold text-foreground mb-2">Room Types</p>
+            <p className="text-xs font-semibold text-foreground mb-2">
+              Room Types
+            </p>
             <div className="flex gap-2 flex-wrap">
               {hotel.roomTypes.map((room) => (
-                <span key={room} className="px-2 py-1 bg-primary/10 text-primary text-xs rounded">
+                <span
+                  key={room}
+                  className="px-2 py-1 bg-primary/10 text-primary text-xs rounded"
+                >
                   {room}
                 </span>
               ))}
@@ -375,7 +447,7 @@ function FeaturedHotelCard({
         </div>
       </div>
     </motion.div>
-  )
+  );
 }
 
 // Hotel Card Component
@@ -388,13 +460,13 @@ function HotelCard({
   onToggleExpand,
   showComparison,
 }: {
-  hotel: Hotel
-  index: number
-  isSelected: boolean
-  onSelect: (id: string) => void
-  isExpanded: boolean
-  onToggleExpand: () => void
-  showComparison: boolean
+  hotel: Hotel;
+  index: number;
+  isSelected: boolean;
+  onSelect: (id: string) => void;
+  isExpanded: boolean;
+  onToggleExpand: () => void;
+  showComparison: boolean;
 }) {
   return (
     <motion.div
@@ -412,8 +484,8 @@ function HotelCard({
           {showComparison && (
             <motion.button
               onClick={(e) => {
-                e.stopPropagation()
-                onSelect(hotel.id)
+                e.stopPropagation();
+                onSelect(hotel.id);
               }}
               whileTap={{ scale: 0.9 }}
               className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center ${
@@ -424,7 +496,9 @@ function HotelCard({
               aria-checked={isSelected}
               aria-label={`Select ${hotel.name} for comparison`}
             >
-              {isSelected && <Check size={16} className="text-white" aria-hidden="true" />}
+              {isSelected && (
+                <Check size={16} className="text-white" aria-hidden="true" />
+              )}
             </motion.button>
           )}
 
@@ -442,21 +516,32 @@ function HotelCard({
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="font-bold text-foreground">{hotel.name}</h3>
-                <div className="flex items-center gap-2 mt-1" aria-label={`Rating: ${hotel.rating} stars`}>
+                <div
+                  className="flex items-center gap-2 mt-1"
+                  aria-label={`Rating: ${hotel.rating} stars`}
+                >
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
                       size={12}
                       className={
-                        i < Math.floor(hotel.rating) ? "fill-secondary text-secondary" : "text-muted-foreground"
+                        i < Math.floor(hotel.rating)
+                          ? "fill-secondary text-secondary"
+                          : "text-muted-foreground"
                       }
                       aria-hidden="true"
                     />
                   ))}
-                  <span className="text-xs text-muted-foreground ml-1">{hotel.rating}</span>
+                  <span className="text-xs text-muted-foreground ml-1">
+                    {hotel.rating}
+                  </span>
                 </div>
               </div>
-              <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.3 }} aria-hidden="true">
+              <motion.div
+                animate={{ rotate: isExpanded ? 180 : 0 }}
+                transition={{ duration: 0.3 }}
+                aria-hidden="true"
+              >
                 <ChevronDown size={20} className="text-muted-foreground" />
               </motion.div>
             </div>
@@ -470,7 +555,10 @@ function HotelCard({
                 <MapPin size={14} className="text-primary" aria-hidden="true" />
                 {hotel.distance}
               </div>
-              <div className="font-bold text-primary" aria-label={`Price: ₦${hotel.price.toLocaleString()} per night`}>
+              <div
+                className="font-bold text-primary"
+                aria-label={`Price: ₦${hotel.price.toLocaleString()} per night`}
+              >
                 ₦{hotel.price.toLocaleString()}/night
               </div>
             </div>
@@ -490,10 +578,15 @@ function HotelCard({
               <div className="space-y-3">
                 {hotel.roomTypes && (
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground mb-1">Available Rooms</p>
+                    <p className="text-xs font-semibold text-muted-foreground mb-1">
+                      Available Rooms
+                    </p>
                     <div className="flex gap-2 flex-wrap">
                       {hotel.roomTypes.map((room) => (
-                        <span key={room} className="px-2 py-1 bg-primary/10 text-primary text-xs rounded">
+                        <span
+                          key={room}
+                          className="px-2 py-1 bg-primary/10 text-primary text-xs rounded"
+                        >
                           {room}
                         </span>
                       ))}
@@ -525,7 +618,7 @@ function HotelCard({
         </AnimatePresence>
       </div>
     </motion.div>
-  )
+  );
 }
 
 // Comparison Section Component
@@ -540,16 +633,26 @@ function ComparisonSection({ hotels }: { hotels: Hotel[] }) {
       role="region"
       aria-label="Hotel comparison table"
     >
-      <h3 className="font-bold text-foreground mb-4">Comparison ({hotels.length} hotels)</h3>
+      <h3 className="font-bold text-foreground mb-4">
+        Comparison ({hotels.length} hotels)
+      </h3>
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm" role="table">
           <thead>
             <tr className="border-b border-border">
-              <th className="text-left py-2 font-semibold text-foreground">Hotel</th>
-              <th className="text-right py-2 font-semibold text-foreground">Price</th>
-              <th className="text-right py-2 font-semibold text-foreground">Rating</th>
-              <th className="text-right py-2 font-semibold text-foreground">Distance</th>
+              <th className="text-left py-2 font-semibold text-foreground">
+                Hotel
+              </th>
+              <th className="text-right py-2 font-semibold text-foreground">
+                Price
+              </th>
+              <th className="text-right py-2 font-semibold text-foreground">
+                Rating
+              </th>
+              <th className="text-right py-2 font-semibold text-foreground">
+                Distance
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -561,12 +664,18 @@ function ComparisonSection({ hotels }: { hotels: Hotel[] }) {
                 transition={{ delay: idx * 0.05 }}
                 className="border-b border-border hover:bg-primary/5 transition-colors"
               >
-                <td className="py-3 text-foreground font-medium">{hotel.name}</td>
+                <td className="py-3 text-foreground font-medium">
+                  {hotel.name}
+                </td>
                 <td className="text-right py-3 text-primary font-bold">
                   ₦{(hotel.discountPrice || hotel.price).toLocaleString()}
                 </td>
-                <td className="text-right py-3 text-foreground">{hotel.rating}★</td>
-                <td className="text-right py-3 text-muted-foreground">{hotel.distance}</td>
+                <td className="text-right py-3 text-foreground">
+                  {hotel.rating}★
+                </td>
+                <td className="text-right py-3 text-muted-foreground">
+                  {hotel.distance}
+                </td>
               </motion.tr>
             ))}
           </tbody>
@@ -582,5 +691,5 @@ function ComparisonSection({ hotels }: { hotels: Hotel[] }) {
         Save Comparison
       </motion.button>
     </motion.div>
-  )
+  );
 }

@@ -1,17 +1,22 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { useNavigate } from "react-router-dom"
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 interface QuickAccessCardProps {
-  title: string
-  emoji: string
-  href: string
-  index: number
+  title: string;
+  emoji: string;
+  href: string;
+  index: number;
 }
 
-export function QuickAccessCard({ title, emoji, href, index }: QuickAccessCardProps) {
-  const navigate = useNavigate()
+export function QuickAccessCard({
+  title,
+  emoji,
+  href,
+  index,
+}: QuickAccessCardProps) {
+  const router = useRouter();
 
   return (
     <motion.button
@@ -23,7 +28,7 @@ export function QuickAccessCard({ title, emoji, href, index }: QuickAccessCardPr
       }}
       whileHover={{ translateY: -4 }}
       whileTap={{ scale: 0.95 }}
-      onClick={() => navigate(href)}
+      onClick={() => router.push(href)}
       className="w-full bg-card border border-border rounded-xl p-4 text-center hover:border-primary/50 hover:shadow-md transition-all active:scale-95"
       data-testid={`quick-access-${title}`}
     >
@@ -41,5 +46,5 @@ export function QuickAccessCard({ title, emoji, href, index }: QuickAccessCardPr
       </motion.div>
       <p className="text-sm font-semibold text-foreground">{title}</p>
     </motion.button>
-  )
+  );
 }

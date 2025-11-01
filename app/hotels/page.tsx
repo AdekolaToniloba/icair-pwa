@@ -1,12 +1,12 @@
 "use client";
 
-import HomePage from "@/components/pages/home-page";
+import HotelsPage from "@/components/pages/hotels-page";
 import { UnifiedPageWrapper } from "@/components/unified-page-wrapper";
 
-export default function Home() {
+export default function Hotels() {
   return (
     <UnifiedPageWrapper>
-      <HomePage />
+      <HotelsPage />
     </UnifiedPageWrapper>
   );
 }

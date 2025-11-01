@@ -1,7 +1,7 @@
 {
-  "name": "UNILAG Conference 2025",
-  "short_name": "UNILAG Conf",
-  "description": "Official mobile app for UNILAG Conference 2025 with schedule, hotels, venues, and more",
+  "name": "ICAIR Conference 2025",
+  "short_name": "ICAIR Conf",
+  "description": "Official companion app for ICAIR Conference 2025 with schedule, hotels, venues, and more",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

@@ -1,24 +1,36 @@
-"use client"
+// code/components/pages/schedule-page.tsx
+"use client";
 
-import { motion } from "framer-motion"
-import { useState, useMemo } from "react"
-import { Clock, MapPin, User, Users, Star, Search, Filter, AlertCircle, Download, ChevronDown } from "lucide-react"
-import { useScheduleStore } from "@/store/schedule-store"
+import { motion } from "framer-motion";
+import { useState, useMemo } from "react";
+import {
+  Clock,
+  MapPin,
+  User,
+  Users,
+  Star,
+  Search,
+  Filter,
+  AlertCircle,
+  Download,
+  ChevronDown,
+} from "lucide-react";
+import { useScheduleStore } from "@/store/schedule-store";
 
 // Session data structure
 interface Session {
-  id: string
-  time: string
-  startTime: number
-  endTime: number
-  title: string
-  speaker: string
-  room: string
-  track: "Keynote" | "Workshop" | "Panel" | "Technical" | "Networking"
-  level: "Beginner" | "Intermediate" | "Advanced"
-  capacity: number
-  description: string
-  avatar?: string
+  id: string;
+  time: string;
+  startTime: number;
+  endTime: number;
+  title: string;
+  speaker: string;
+  room: string;
+  track: "Keynote" | "Workshop" | "Panel" | "Technical" | "Networking";
+  level: "Beginner" | "Intermediate" | "Advanced";
+  capacity: number;
+  description: string;
+  avatar?: string;
 }
 
 const sessions: Record<string, Session[]> = {
@@ -34,7 +46,8 @@ const sessions: Record<string, Session[]> = {
       track: "Keynote",
       level: "All" as any,
       capacity: 500,
-      description: "An inspiring welcome address and overview of the conference themes.",
+      description:
+        "An inspiring welcome address and overview of the conference themes.",
       avatar: "👩‍💼",
     },
     {
@@ -48,7 +61,8 @@ const sessions: Record<string, Session[]> = {
       track: "Technical",
       level: "Intermediate",
       capacity: 80,
-      description: "Exploring applications of artificial intelligence in academic institutions.",
+      description:
+        "Exploring applications of artificial intelligence in academic institutions.",
       avatar: "👨‍🏫",
     },
     {
@@ -62,7 +76,8 @@ const sessions: Record<string, Session[]> = {
       track: "Workshop",
       level: "Beginner",
       capacity: 60,
-      description: "Hands-on workshop on digital transformation strategies for institutions.",
+      description:
+        "Hands-on workshop on digital transformation strategies for institutions.",
       avatar: "👩‍💻",
     },
     {
@@ -76,7 +91,8 @@ const sessions: Record<string, Session[]> = {
       track: "Panel",
       level: "Advanced",
       capacity: 200,
-      description: "Leading researchers discuss cutting-edge findings and future directions.",
+      description:
+        "Leading researchers discuss cutting-edge findings and future directions.",
       avatar: "🎤",
     },
     {
@@ -104,7 +120,8 @@ const sessions: Record<string, Session[]> = {
       track: "Technical",
       level: "Intermediate",
       capacity: 100,
-      description: "Emerging technologies shaping the future of educational experiences.",
+      description:
+        "Emerging technologies shaping the future of educational experiences.",
       avatar: "👩‍🔬",
     },
     {
@@ -118,7 +135,8 @@ const sessions: Record<string, Session[]> = {
       track: "Networking",
       level: "All" as any,
       capacity: 300,
-      description: "Informal networking session to connect with peers and speakers.",
+      description:
+        "Informal networking session to connect with peers and speakers.",
       avatar: "🤝",
     },
   ],
@@ -134,7 +152,8 @@ const sessions: Record<string, Session[]> = {
       track: "Workshop",
       level: "Advanced",
       capacity: 40,
-      description: "Deep dive into advanced Python concepts and best practices.",
+      description:
+        "Deep dive into advanced Python concepts and best practices.",
       avatar: "🐍",
     },
     {
@@ -148,7 +167,8 @@ const sessions: Record<string, Session[]> = {
       track: "Technical",
       level: "Beginner",
       capacity: 75,
-      description: "Introduction to cloud computing concepts and AWS fundamentals.",
+      description:
+        "Introduction to cloud computing concepts and AWS fundamentals.",
       avatar: "☁️",
     },
     {
@@ -162,7 +182,8 @@ const sessions: Record<string, Session[]> = {
       track: "Panel",
       level: "Intermediate",
       capacity: 250,
-      description: "Tech leaders share insights on industry trends and career opportunities.",
+      description:
+        "Tech leaders share insights on industry trends and career opportunities.",
       avatar: "💼",
     },
     {
@@ -176,7 +197,8 @@ const sessions: Record<string, Session[]> = {
       track: "Technical",
       level: "Beginner",
       capacity: 150,
-      description: "Students showcase innovative projects and research findings.",
+      description:
+        "Students showcase innovative projects and research findings.",
       avatar: "🎯",
     },
     {
@@ -194,7 +216,7 @@ const sessions: Record<string, Session[]> = {
       avatar: "🏆",
     },
   ],
-}
+};
 
 const container = {
   hidden: { opacity: 0 },
@@ -205,37 +227,39 @@ const container = {
       delayChildren: 0.1,
     },
   },
-}
+};
 
 const item = {
   hidden: { opacity: 0, y: 10 },
   show: { opacity: 1, y: 0 },
-}
+};
 
 export default function SchedulePage() {
-  const [viewType, setViewType] = useState<"agenda" | "tracks" | "my-schedule">("agenda")
-  const [selectedDay, setSelectedDay] = useState<"Nov 4" | "Nov 5">("Nov 4")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [selectedTrack, setSelectedTrack] = useState<string | null>(null)
-  const [selectedLevel, setSelectedLevel] = useState<string | null>(null)
-  const [expandedSession, setExpandedSession] = useState<string | null>(null)
-  const { starredSessions, toggleStarSession } = useScheduleStore()
+  const [viewType, setViewType] = useState<"agenda" | "tracks" | "my-schedule">(
+    "agenda"
+  );
+  const [selectedDay, setSelectedDay] = useState<"Nov 4" | "Nov 5">("Nov 4");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
+  const [expandedSession, setExpandedSession] = useState<string | null>(null);
+  const { starredSessions, toggleStarSession } = useScheduleStore();
 
   // Get all unique tracks and levels
   const allTracks = Array.from(
     new Set(
       Object.values(sessions)
         .flat()
-        .map((s) => s.track),
-    ),
-  )
+        .map((s) => s.track)
+    )
+  );
   const allLevels = Array.from(
     new Set(
       Object.values(sessions)
         .flat()
-        .map((s) => s.level),
-    ),
-  )
+        .map((s) => s.level)
+    )
+  );
 
   // Filter and search logic
   const filteredSessions = useMemo(() => {
@@ -244,58 +268,69 @@ export default function SchedulePage() {
       .filter((session) => {
         const matchesSearch =
           session.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          session.speaker.toLowerCase().includes(searchQuery.toLowerCase())
-        const matchesTrack = !selectedTrack || session.track === selectedTrack
-        const matchesLevel = !selectedLevel || session.level === selectedLevel
+          session.speaker.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesTrack = !selectedTrack || session.track === selectedTrack;
+        const matchesLevel = !selectedLevel || session.level === selectedLevel;
 
-        return matchesSearch && matchesTrack && matchesLevel
-      })
+        return matchesSearch && matchesTrack && matchesLevel;
+      });
 
     if (viewType === "agenda") {
-      result = result.filter((s) => sessions[selectedDay].includes(s))
+      result = result.filter((s) => sessions[selectedDay].includes(s));
     } else if (viewType === "my-schedule") {
-      result = result.filter((s) => starredSessions.includes(s.id))
+      result = result.filter((s) => starredSessions.includes(s.id));
     }
 
-    return result
-  }, [searchQuery, selectedTrack, selectedLevel, viewType, selectedDay, starredSessions])
+    return result;
+  }, [
+    searchQuery,
+    selectedTrack,
+    selectedLevel,
+    viewType,
+    selectedDay,
+    starredSessions,
+  ]);
 
   // Conflict detection
   const conflicts = useMemo(() => {
     const starred = Object.values(sessions)
       .flat()
-      .filter((s) => starredSessions.includes(s.id))
-    const conflicting = new Set<string>()
+      .filter((s) => starredSessions.includes(s.id));
+    const conflicting = new Set<string>();
 
     for (let i = 0; i < starred.length; i++) {
       for (let j = i + 1; j < starred.length; j++) {
-        const s1 = starred[i]
-        const s2 = starred[j]
+        const s1 = starred[i];
+        const s2 = starred[j];
         if (!(s1.endTime <= s2.startTime || s2.endTime <= s1.startTime)) {
-          conflicting.add(s1.id)
-          conflicting.add(s2.id)
+          conflicting.add(s1.id);
+          conflicting.add(s2.id);
         }
       }
     }
 
-    return conflicting
-  }, [starredSessions])
+    return conflicting;
+  }, [starredSessions]);
 
   // Group sessions by track
   const sessionsByTrack = useMemo(() => {
-    const grouped: Record<string, Session[]> = {}
+    const grouped: Record<string, Session[]> = {};
     filteredSessions.forEach((session) => {
       if (!grouped[session.track]) {
-        grouped[session.track] = []
+        grouped[session.track] = [];
       }
-      grouped[session.track].push(session)
-    })
-    return grouped
-  }, [filteredSessions])
+      grouped[session.track].push(session);
+    });
+    return grouped;
+  }, [filteredSessions]);
 
   const generateICS = (session: Session) => {
-    const start = new Date("2025-11-04T" + session.time.split("-")[0] + ":00").toISOString()
-    const end = new Date("2025-11-04T" + session.time.split("-")[1] + ":00").toISOString()
+    const start = new Date(
+      "2025-11-04T" + session.time.split("-")[0] + ":00"
+    ).toISOString();
+    const end = new Date(
+      "2025-11-04T" + session.time.split("-")[1] + ":00"
+    ).toISOString();
 
     const ical = `BEGIN:VCALENDAR
 VERSION:2.0
@@ -309,19 +344,27 @@ SUMMARY:${session.title}
 DESCRIPTION:${session.description}
 LOCATION:${session.room}
 END:VEVENT
-END:VCALENDAR`
+END:VCALENDAR`;
 
-    const blob = new Blob([ical], { type: "text/calendar" })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.href = url
-    link.download = `${session.title.replace(/\s+/g, "_")}.ics`
-    link.click()
-  }
+    const blob = new Blob([ical], { type: "text/calendar" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${session.title.replace(/\s+/g, "_")}.ics`;
+    link.click();
+  };
 
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="px-4 py-6 sm:px-6 sm:py-8 pb-8">
-      <h2 className="text-2xl font-bold mb-6 text-foreground" data-testid="schedule-title">
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="px-4 py-6 sm:px-6 sm:py-8 pb-8"
+    >
+      <h2
+        className="text-2xl font-bold mb-6 text-foreground"
+        data-testid="schedule-title"
+      >
         Conference Schedule
       </h2>
 
@@ -338,7 +381,9 @@ END:VCALENDAR`
             onClick={() => setViewType(view)}
             whileTap={{ scale: 0.95 }}
             className={`px-4 py-2 rounded-full font-medium text-sm whitespace-nowrap transition-all ${
-              viewType === view ? "bg-primary text-white" : "bg-primary/10 text-primary hover:bg-primary/20"
+              viewType === view
+                ? "bg-primary text-white"
+                : "bg-primary/10 text-primary hover:bg-primary/20"
             }`}
             data-testid={`view-${view}`}
             role="tab"
@@ -353,10 +398,16 @@ END:VCALENDAR`
       </motion.div>
 
       {/* Search and Filters */}
-      <motion.div variants={item} className="bg-card rounded-lg border border-border p-4 mb-6">
+      <motion.div
+        variants={item}
+        className="bg-card rounded-lg border border-border p-4 mb-6"
+      >
         {/* Search Bar */}
         <div className="mb-4">
-          <label htmlFor="session-search" className="text-sm font-medium text-foreground mb-2 block">
+          <label
+            htmlFor="session-search"
+            className="text-sm font-medium text-foreground mb-2 block"
+          >
             Search Sessions
           </label>
           <div className="relative">
@@ -383,15 +434,23 @@ END:VCALENDAR`
           {/* Day Selection (for Agenda view) */}
           {viewType === "agenda" && (
             <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">Day</label>
-              <div className="flex gap-2" role="group" aria-label="Conference days">
+              <label className="text-sm font-medium text-foreground mb-2 block">
+                Day
+              </label>
+              <div
+                className="flex gap-2"
+                role="group"
+                aria-label="Conference days"
+              >
                 {["Nov 4", "Nov 5"].map((day) => (
                   <motion.button
                     key={day}
                     onClick={() => setSelectedDay(day as "Nov 4" | "Nov 5")}
                     whileTap={{ scale: 0.95 }}
                     className={`px-3 py-1 rounded-full text-sm transition-all ${
-                      selectedDay === day ? "bg-primary text-white" : "bg-primary/10 text-primary hover:bg-primary/20"
+                      selectedDay === day
+                        ? "bg-primary text-white"
+                        : "bg-primary/10 text-primary hover:bg-primary/20"
                     }`}
                     data-testid={`day-${day}`}
                     aria-pressed={selectedDay === day}
@@ -409,12 +468,18 @@ END:VCALENDAR`
               <Filter size={16} aria-hidden="true" />
               Track
             </label>
-            <div className="flex gap-2 flex-wrap" role="group" aria-label="Session tracks">
+            <div
+              className="flex gap-2 flex-wrap"
+              role="group"
+              aria-label="Session tracks"
+            >
               <motion.button
                 onClick={() => setSelectedTrack(null)}
                 whileTap={{ scale: 0.95 }}
                 className={`px-3 py-1 rounded-full text-xs transition-all ${
-                  !selectedTrack ? "bg-primary text-white" : "bg-primary/10 text-primary hover:bg-primary/20"
+                  !selectedTrack
+                    ? "bg-primary text-white"
+                    : "bg-primary/10 text-primary hover:bg-primary/20"
                 }`}
                 aria-pressed={!selectedTrack}
               >
@@ -423,10 +488,14 @@ END:VCALENDAR`
               {allTracks.map((track) => (
                 <motion.button
                   key={track}
-                  onClick={() => setSelectedTrack(selectedTrack === track ? null : track)}
+                  onClick={() =>
+                    setSelectedTrack(selectedTrack === track ? null : track)
+                  }
                   whileTap={{ scale: 0.95 }}
                   className={`px-3 py-1 rounded-full text-xs transition-all ${
-                    selectedTrack === track ? "bg-primary text-white" : "bg-primary/10 text-primary hover:bg-primary/20"
+                    selectedTrack === track
+                      ? "bg-primary text-white"
+                      : "bg-primary/10 text-primary hover:bg-primary/20"
                   }`}
                   data-testid={`track-${track}`}
                   aria-pressed={selectedTrack === track}
@@ -439,13 +508,21 @@ END:VCALENDAR`
 
           {/* Level Filter */}
           <div>
-            <label className="text-sm font-medium text-foreground mb-2 block">Level</label>
-            <div className="flex gap-2 flex-wrap" role="group" aria-label="Session levels">
+            <label className="text-sm font-medium text-foreground mb-2 block">
+              Level
+            </label>
+            <div
+              className="flex gap-2 flex-wrap"
+              role="group"
+              aria-label="Session levels"
+            >
               <motion.button
                 onClick={() => setSelectedLevel(null)}
                 whileTap={{ scale: 0.95 }}
                 className={`px-3 py-1 rounded-full text-xs transition-all ${
-                  !selectedLevel ? "bg-primary text-white" : "bg-primary/10 text-primary hover:bg-primary/20"
+                  !selectedLevel
+                    ? "bg-primary text-white"
+                    : "bg-primary/10 text-primary hover:bg-primary/20"
                 }`}
                 aria-pressed={!selectedLevel}
               >
@@ -454,10 +531,14 @@ END:VCALENDAR`
               {allLevels.map((level) => (
                 <motion.button
                   key={level}
-                  onClick={() => setSelectedLevel(selectedLevel === level ? null : level)}
+                  onClick={() =>
+                    setSelectedLevel(selectedLevel === level ? null : level)
+                  }
                   whileTap={{ scale: 0.95 }}
                   className={`px-3 py-1 rounded-full text-xs transition-all ${
-                    selectedLevel === level ? "bg-primary text-white" : "bg-primary/10 text-primary hover:bg-primary/20"
+                    selectedLevel === level
+                      ? "bg-primary text-white"
+                      : "bg-primary/10 text-primary hover:bg-primary/20"
                   }`}
                   data-testid={`level-${level}`}
                   aria-pressed={selectedLevel === level}
@@ -479,11 +560,18 @@ END:VCALENDAR`
           role="alert"
           aria-live="assertive"
         >
-          <AlertCircle size={20} className="text-red-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <AlertCircle
+            size={20}
+            className="text-red-600 flex-shrink-0 mt-0.5"
+            aria-hidden="true"
+          />
           <div>
-            <p className="font-semibold text-red-900">Schedule Conflict Detected</p>
+            <p className="font-semibold text-red-900">
+              Schedule Conflict Detected
+            </p>
             <p className="text-sm text-red-800">
-              {conflicts.size} of your selected sessions overlap. Please review your choices.
+              {conflicts.size} of your selected sessions overlap. Please review
+              your choices.
             </p>
           </div>
         </motion.div>
@@ -495,7 +583,9 @@ END:VCALENDAR`
           // Agenda View - Timeline
           <div className="space-y-3">
             {filteredSessions.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">No sessions found</p>
+              <p className="text-center text-muted-foreground py-8">
+                No sessions found
+              </p>
             ) : (
               filteredSessions.map((session, idx) => (
                 <SessionCard
@@ -505,7 +595,11 @@ END:VCALENDAR`
                   isStarred={starredSessions.includes(session.id)}
                   onToggleStar={() => toggleStarSession(session.id)}
                   isExpanded={expandedSession === session.id}
-                  onToggleExpand={() => setExpandedSession(expandedSession === session.id ? null : session.id)}
+                  onToggleExpand={() =>
+                    setExpandedSession(
+                      expandedSession === session.id ? null : session.id
+                    )
+                  }
                   hasConflict={conflicts.has(session.id)}
                   onDownloadICS={() => generateICS(session)}
                 />
@@ -516,35 +610,46 @@ END:VCALENDAR`
           // Tracks View - Grouped by Category
           <div className="space-y-6">
             {Object.entries(sessionsByTrack).length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">No sessions found</p>
+              <p className="text-center text-muted-foreground py-8">
+                No sessions found
+              </p>
             ) : (
-              Object.entries(sessionsByTrack).map(([track, trackSessions], trackIdx) => (
-                <motion.div
-                  key={track}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: trackIdx * 0.1 }}
-                >
-                  <h3 className="text-lg font-bold text-foreground mb-3" data-testid={`track-header-${track}`}>
-                    {track}
-                  </h3>
-                  <div className="space-y-2">
-                    {trackSessions.map((session, idx) => (
-                      <SessionCard
-                        key={session.id}
-                        session={session}
-                        index={idx}
-                        isStarred={starredSessions.includes(session.id)}
-                        onToggleStar={() => toggleStarSession(session.id)}
-                        isExpanded={expandedSession === session.id}
-                        onToggleExpand={() => setExpandedSession(expandedSession === session.id ? null : session.id)}
-                        hasConflict={conflicts.has(session.id)}
-                        onDownloadICS={() => generateICS(session)}
-                      />
-                    ))}
-                  </div>
-                </motion.div>
-              ))
+              Object.entries(sessionsByTrack).map(
+                ([track, trackSessions], trackIdx) => (
+                  <motion.div
+                    key={track}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: trackIdx * 0.1 }}
+                  >
+                    <h3
+                      className="text-lg font-bold text-foreground mb-3"
+                      data-testid={`track-header-${track}`}
+                    >
+                      {track}
+                    </h3>
+                    <div className="space-y-2">
+                      {trackSessions.map((session, idx) => (
+                        <SessionCard
+                          key={session.id}
+                          session={session}
+                          index={idx}
+                          isStarred={starredSessions.includes(session.id)}
+                          onToggleStar={() => toggleStarSession(session.id)}
+                          isExpanded={expandedSession === session.id}
+                          onToggleExpand={() =>
+                            setExpandedSession(
+                              expandedSession === session.id ? null : session.id
+                            )
+                          }
+                          hasConflict={conflicts.has(session.id)}
+                          onDownloadICS={() => generateICS(session)}
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                )
+              )
             )}
           </div>
         ) : (
@@ -552,7 +657,10 @@ END:VCALENDAR`
           <div className="space-y-3">
             {filteredSessions.length === 0 ? (
               <motion.div variants={item} className="text-center py-8">
-                <Star className="mx-auto mb-2 text-muted-foreground" size={32} />
+                <Star
+                  className="mx-auto mb-2 text-muted-foreground"
+                  size={32}
+                />
                 <p className="text-muted-foreground">
                   {starredSessions.length === 0
                     ? "No sessions starred yet. Star sessions to add them to your schedule!"
@@ -568,7 +676,11 @@ END:VCALENDAR`
                   isStarred={true}
                   onToggleStar={() => toggleStarSession(session.id)}
                   isExpanded={expandedSession === session.id}
-                  onToggleExpand={() => setExpandedSession(expandedSession === session.id ? null : session.id)}
+                  onToggleExpand={() =>
+                    setExpandedSession(
+                      expandedSession === session.id ? null : session.id
+                    )
+                  }
                   hasConflict={conflicts.has(session.id)}
                   onDownloadICS={() => generateICS(session)}
                 />
@@ -578,7 +690,7 @@ END:VCALENDAR`
         )}
       </motion.div>
     </motion.div>
-  )
+  );
 }
 
 // Session Card Component
@@ -592,27 +704,27 @@ function SessionCard({
   hasConflict,
   onDownloadICS,
 }: {
-  session: Session
-  index: number
-  isStarred: boolean
-  onToggleStar: () => void
-  isExpanded: boolean
-  onToggleExpand: () => void
-  hasConflict: boolean
-  onDownloadICS: () => void
+  session: Session;
+  index: number;
+  isStarred: boolean;
+  onToggleStar: () => void;
+  isExpanded: boolean;
+  onToggleExpand: () => void;
+  hasConflict: boolean;
+  onDownloadICS: () => void;
 }) {
   const getLevelColor = (level: string) => {
     switch (level) {
       case "Beginner":
-        return "bg-green-100 text-green-700"
+        return "bg-green-100 text-green-700";
       case "Intermediate":
-        return "bg-yellow-100 text-yellow-700"
+        return "bg-yellow-100 text-yellow-700";
       case "Advanced":
-        return "bg-red-100 text-red-700"
+        return "bg-red-100 text-red-700";
       default:
-        return "bg-gray-100 text-gray-700"
+        return "bg-gray-100 text-gray-700";
     }
-  }
+  };
 
   return (
     <motion.div
@@ -638,7 +750,12 @@ function SessionCard({
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="font-bold text-foreground">{session.title}</h3>
-                  {hasConflict && <AlertCircle size={16} className="text-red-600 flex-shrink-0" />}
+                  {hasConflict && (
+                    <AlertCircle
+                      size={16}
+                      className="text-red-600 flex-shrink-0"
+                    />
+                  )}
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                   <Clock size={14} />
@@ -649,15 +766,22 @@ function SessionCard({
               {/* Star Button */}
               <motion.button
                 onClick={(e) => {
-                  e.stopPropagation()
-                  onToggleStar()
+                  e.stopPropagation();
+                  onToggleStar();
                 }}
                 whileTap={{ scale: 0.9 }}
                 animate={{ rotate: isStarred ? 0 : 0 }}
                 className="p-2 hover:bg-primary/10 rounded-lg transition-colors flex-shrink-0"
                 data-testid={`star-${session.id}`}
               >
-                <Star size={20} className={isStarred ? "fill-secondary text-secondary" : "text-muted-foreground"} />
+                <Star
+                  size={20}
+                  className={
+                    isStarred
+                      ? "fill-secondary text-secondary"
+                      : "text-muted-foreground"
+                  }
+                />
               </motion.button>
             </div>
 
@@ -679,23 +803,32 @@ function SessionCard({
 
             {/* Level Badge and Track */}
             <div className="flex gap-2 mb-3">
-              <span className={`px-2 py-1 rounded text-xs font-medium ${getLevelColor(session.level)}`}>
+              <span
+                className={`px-2 py-1 rounded text-xs font-medium ${getLevelColor(
+                  session.level
+                )}`}
+              >
                 {session.level}
               </span>
-              <span className="px-2 py-1 rounded text-xs font-medium bg-primary/10 text-primary">{session.track}</span>
+              <span className="px-2 py-1 rounded text-xs font-medium bg-primary/10 text-primary">
+                {session.track}
+              </span>
             </div>
 
             {/* Expand/Collapse Section */}
             <motion.button
               onClick={(e) => {
-                e.stopPropagation()
-                onToggleExpand()
+                e.stopPropagation();
+                onToggleExpand();
               }}
               className="text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 transition-colors"
               data-testid={`expand-${session.id}`}
             >
               {isExpanded ? "Hide Details" : "View Details"}
-              <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={{ duration: 0.2 }}>
+              <motion.div
+                animate={{ rotate: isExpanded ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+              >
                 <ChevronDown size={16} />
               </motion.div>
             </motion.button>
@@ -716,8 +849,8 @@ function SessionCard({
                   <motion.button
                     whileTap={{ scale: 0.95 }}
                     onClick={(e) => {
-                      e.stopPropagation()
-                      onDownloadICS()
+                      e.stopPropagation();
+                      onDownloadICS();
                     }}
                     className="flex-1 px-3 py-2 bg-primary text-white rounded font-semibold text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
                     data-testid={`calendar-${session.id}`}
@@ -732,5 +865,5 @@ function SessionCard({
         </div>
       </div>
     </motion.div>
-  )
+  );
 }

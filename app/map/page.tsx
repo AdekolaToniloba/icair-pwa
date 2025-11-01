@@ -1,12 +1,12 @@
 "use client";
 
-import HomePage from "@/components/pages/home-page";
+import MapPage from "@/components/pages/map-page";
 import { UnifiedPageWrapper } from "@/components/unified-page-wrapper";
 
-export default function Home() {
+export default function Map() {
   return (
     <UnifiedPageWrapper>
-      <HomePage />
+      <MapPage />
     </UnifiedPageWrapper>
   );
 }

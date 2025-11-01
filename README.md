@@ -1,10 +1,10 @@
-# UNILAG Conference 2025 - Mobile-First PWA
+# ICAIR Conference 2025 - Mobile-First PWA
 
-A beautiful, feature-rich Progressive Web App (PWA) for the UNILAG Conference 2025, built with React, Next.js, TypeScript, Tailwind CSS, and Framer Motion. Designed mobile-first with smooth animations, offline capabilities, and comprehensive state management.
+A beautiful, feature-rich Progressive Web App (PWA) for the ICAIR Conference 2025, built with React, Next.js, TypeScript, Tailwind CSS, and Framer Motion. Designed mobile-first with smooth animations, offline capabilities, and comprehensive state management.
 
 ## Overview
 
-The UNILAG Conference 2025 app is a complete solution for conference attendees, providing:
+The ICAIR Conference 2025 companion app is a complete solution for conference attendees, providing:
 
 - **Interactive Schedule Management** - Browse sessions, add favorites, get conflict alerts
 - **Hotel Directory** - Discover accommodation, compare prices, filter by preferences
@@ -777,6 +777,6 @@ This project is licensed under the MIT License - see LICENSE file for details.
 
 ---
 
-**Built with ❤️ for UNILAG Conference 2025**
+**Built with ❤️ for ICAIR Conference 2025**
 
 Last updated: {{ date }}

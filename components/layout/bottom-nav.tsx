@@ -1,31 +1,38 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useLocation, useNavigate } from "react-router-dom"
-import { motion } from "framer-motion"
-import { Home, Calendar, Hotel, MapPin, MoreHorizontal } from "lucide-react"
+import type React from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { motion } from "framer-motion";
+import {
+  Home,
+  Calendar,
+  Hotel,
+  MapPin,
+  MoreHorizontal,
+  Plane,
+} from "lucide-react";
 
 interface NavItem {
-  id: string
-  label: string
-  icon: React.ElementType
-  href: string
+  id: string;
+  label: string;
+  icon: React.ElementType;
+  href: string;
 }
 
 const navItems: NavItem[] = [
   { id: "home", label: "Home", icon: Home, href: "/" },
   { id: "schedule", label: "Schedule", icon: Calendar, href: "/schedule" },
   { id: "hotels", label: "Hotels", icon: Hotel, href: "/hotels" },
+  { id: "travel", label: "Travel Guide", icon: Plane, href: "/travel-guide" },
   { id: "map", label: "Map", icon: MapPin, href: "/map" },
   { id: "more", label: "More", icon: MoreHorizontal, href: "/more" },
-]
+];
 
 export default function BottomNav() {
-  const location = useLocation()
-  const navigate = useNavigate()
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const isActive = (href: string) => location.pathname === href
+  const isActive = (href: string) => pathname === href;
 
   return (
     <motion.nav
@@ -37,13 +44,13 @@ export default function BottomNav() {
     >
       <div className="flex items-center justify-around px-2 py-3">
         {navItems.map((item) => {
-          const Icon = item.icon
-          const active = isActive(item.href)
+          const Icon = item.icon;
+          const active = isActive(item.href);
 
           return (
             <motion.button
               key={item.id}
-              onClick={() => navigate(item.href)}
+              onClick={() => router.push(item.href)}
               className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors relative"
               whileTap={{ scale: 0.95 }}
               whileHover={{ scale: 1.05 }}
@@ -70,7 +77,11 @@ export default function BottomNav() {
                 className="relative z-10"
                 aria-hidden="true"
               >
-                <Icon size={24} strokeWidth={active ? 2.5 : 2} data-testid={`icon-${item.id}`} />
+                <Icon
+                  size={24}
+                  strokeWidth={active ? 2.5 : 2}
+                  data-testid={`icon-${item.id}`}
+                />
               </motion.div>
 
               <motion.span
@@ -99,9 +110,9 @@ export default function BottomNav() {
                 />
               )}
             </motion.button>
-          )
+          );
         })}
       </div>
     </motion.nav>
-  )
+  );
 }

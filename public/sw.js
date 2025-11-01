@@ -1,4 +1,4 @@
-const CACHE_NAME = "unilag-conf-v1"
+const CACHE_NAME = "icair-conf-v1"
 const urlsToCache = ["/", "/manifest.json", "/offline.html"]
 
 // Install event - cache static assets
