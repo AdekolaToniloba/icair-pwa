@@ -19,7 +19,7 @@ interface NavItem {
   icon: React.ElementType;
   href: string;
 }
-
+//  change colors
 const navItems: NavItem[] = [
   { id: "home", label: "Home", icon: Home, href: "/" },
   { id: "schedule", label: "Schedule", icon: Calendar, href: "/schedule" },
