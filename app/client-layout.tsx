@@ -8,7 +8,7 @@ import BottomNav from "@/components/layout/bottom-nav";
 import { AnimatePresence, motion } from "framer-motion";
 import { UnifiedPageWrapper } from "@/components/unified-page-wrapper";
 import { useNotifications } from "@/hooks/use-notifications";
-import NotificationTestButton from "@/components/notification-test-btn";
+import SimpleNotificationTest from "@/components/simple-notification-test";
 
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -63,7 +63,7 @@ export default function ClientLayout({
           `,
         }}
       />
-      <NotificationTestButton />
+      <SimpleNotificationTest />
     </Providers>
   );
 }
