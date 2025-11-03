@@ -166,7 +166,7 @@ function ExpandedSection({ section, onToggleItem }: ExpandedSectionProps) {
               <motion.div
                 animate={{ scale: item.completed ? 1.2 : 1 }}
                 transition={{ duration: 0.2 }}
-                className="flex-shrink-0"
+                className="shrink-0"
               >
                 {item.completed ? (
                   <CheckCircle2 className="w-5 h-5 text-primary" />
@@ -430,7 +430,7 @@ export default function TravelChecklistPage() {
                 data-testid={`section-toggle-${section.id}`}
               >
                 <div className="flex items-center gap-3 text-left">
-                  <div className="flex-shrink-0 p-2 bg-primary/10 rounded-lg">
+                  <div className="shrink-0 p-2 bg-primary/10 rounded-lg">
                     <Icon size={20} className="text-primary" />
                   </div>
                   <div>
@@ -445,7 +445,7 @@ export default function TravelChecklistPage() {
                 <motion.div
                   animate={{ rotate: isExpanded ? 180 : 0 }}
                   transition={{ duration: 0.3 }}
-                  className="flex-shrink-0"
+                  className="shrink-0"
                 >
                   <ChevronDown size={20} className="text-muted-foreground" />
                 </motion.div>

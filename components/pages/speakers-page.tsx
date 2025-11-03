@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useMemo } from "react";
 import {
   Search,
-  Filter,
   Users,
   Mic2,
   GraduationCap,
@@ -13,178 +12,46 @@ import {
   MapPin,
   ExternalLink,
   X,
+  Mail,
+  Sparkles,
+  User,
 } from "lucide-react";
+import {
+  SPEAKERS,
+  getSpeakersByCategory,
+  searchSpeakers,
+  type Speaker,
+  type SpeakerCategory,
+} from "@/data/speakers-data";
 
-type SpeakerCategory = "keynote" | "masterclass" | "panel" | "workshop" | "all";
-
-interface Speaker {
-  id: string;
-  name: string;
-  title: string;
-  organization: string;
-  location?: string;
-  bio: string;
-  topic?: string;
-  category: SpeakerCategory[];
-  image: string;
-  linkedin?: string;
-  twitter?: string;
-}
-
-const SPEAKERS: Speaker[] = [
-  {
-    id: "1",
-    name: "Dr. Bunmi Ajala",
-    title: "Senior Special Adviser",
-    organization: "Ministry of Communications, Innovation and Digital Economy",
-    location: "Nigeria",
-    bio: "Dr. Bunmi Ajala serves as Senior Special Adviser to the Minister of Communications, Innovation and Digital Economy in Nigeria. With extensive experience in digital policy and innovation, she has been instrumental in shaping Nigeria's digital transformation agenda.",
-    topic: "Digital Innovation Policy in Nigeria",
-    category: ["keynote"],
-    image: "/speakers/bunmi-ajala.jpg",
-  },
-  {
-    id: "2",
-    name: "Prof. Chijioke Okorie",
-    title: "Professor",
-    organization: "University of Pretoria",
-    location: "South Africa",
-    bio: "Prof. Chijioke Okorie is a distinguished academic at the University of Pretoria, South Africa. His research focuses on artificial intelligence applications in African contexts and sustainable technology development.",
-    topic: "AI for Sustainable Development in Africa",
-    category: ["keynote", "panel"],
-    image: "/speakers/chijioke-okorie.jpg",
-  },
-  {
-    id: "3",
-    name: "Hon. Olatubosun Alake",
-    title: "Commissioner",
-    organization: "Lagos State Ministry of Innovation, Science, and Technology",
-    location: "Lagos, Nigeria",
-    bio: "As Lagos State Commissioner for Innovation, Science, and Technology, Hon. Olatubosun Alake drives technology adoption and innovation across Africa's largest city, fostering an ecosystem for startups and tech companies.",
-    topic: "Smart Cities and Innovation Ecosystems",
-    category: ["keynote"],
-    image: "/speakers/olatubosun-alake.jpg",
-  },
-  {
-    id: "4",
-    name: "Fatima Tambajang",
-    title: "Developer Relations, Startups & VC Ecosystem",
-    organization: "NVIDIA",
-    location: "USA",
-    bio: "Fatima Tambajang leads developer relations for startups and the VC ecosystem at NVIDIA, connecting cutting-edge AI technology with emerging ventures and supporting the growth of AI-powered startups globally.",
-    topic: "AI Infrastructure for Startups",
-    category: ["masterclass", "panel"],
-    image: "/speakers/fatima-tambajang.jpg",
-  },
-  {
-    id: "5",
-    name: "Dr. Avishkar Bhoopchand",
-    title: "Research Engineer",
-    organization: "Google DeepMind",
-    location: "London, UK",
-    bio: "Dr. Avishkar Bhoopchand is a Research Engineer at Google DeepMind in London, where he works on advancing artificial intelligence through deep learning research and developing next-generation AI systems.",
-    topic: "Advances in Deep Learning Research",
-    category: ["keynote", "masterclass"],
-    image: "/speakers/avishkar-bhoopchand.jpg",
-  },
-  {
-    id: "6",
-    name: "Ndidi M. Elue",
-    title: "Corporate Counsel",
-    organization: "Google DeepMind",
-    location: "London, UK",
-    bio: "Ndidi M. Elue serves as Corporate Counsel at Google DeepMind, specializing in AI ethics, policy, and the legal frameworks governing artificial intelligence development and deployment.",
-    topic: "AI Ethics and Legal Frameworks",
-    category: ["panel", "workshop"],
-    image: "/speakers/ndidi-elue.jpg",
-  },
-  {
-    id: "7",
-    name: "Dr. Bayo Adekanmbi",
-    title: "Founder & CEO",
-    organization: "Data Science Nigeria",
-    location: "Nigeria",
-    bio: "Dr. Bayo Adekanmbi is the Founder and Chief Executive Officer of Data Science Nigeria, a non-profit dedicated to building AI talent across Africa. Under his leadership, DSN has trained thousands of AI practitioners.",
-    topic: "Building AI Talent in Africa",
-    category: ["keynote"],
-    image: "/speakers/bayo-adekanmbi.jpg",
-  },
-  {
-    id: "8",
-    name: "Dr. Sanmi Koyejo",
-    title: "Assistant Professor, Computer Science",
-    organization: "Stanford University",
-    location: "California, USA",
-    bio: "Dr. Sanmi Koyejo is an Assistant Professor of Computer Science at Stanford University. His research focuses on machine learning, particularly in developing robust and interpretable AI systems.",
-    topic: "Robust and Interpretable Machine Learning",
-    category: ["keynote", "masterclass"],
-    image: "/speakers/sanmi-koyejo.jpg",
-  },
-  {
-    id: "9",
-    name: "Prof. Muhammad Abdul-Mageed",
-    title: "Canada Research Chair",
-    organization: "University of British Columbia",
-    location: "Vancouver, Canada",
-    bio: "Prof. Muhammad Abdul-Mageed holds the Canada Research Chair at the University of British Columbia. His work focuses on natural language processing, particularly for low-resource languages and multilingual AI.",
-    topic: "Multilingual AI and NLP",
-    category: ["keynote", "masterclass"],
-    image: "/speakers/muhammad-abdul-mageed.jpg",
-  },
-  {
-    id: "10",
-    name: "Dr. Adedeji Adeniran",
-    title: "Director of Research",
-    organization: "Center for the Study of the Economies of Africa (CSEA)",
-    location: "Nigeria",
-    bio: "Dr. Adedeji Adeniran directs research at CSEA, focusing on economic policy analysis and development economics. His work examines the intersection of technology, innovation, and economic growth in Africa.",
-    topic: "AI and Economic Development",
-    category: ["panel"],
-    image: "/speakers/adedeji-adeniran.jpg",
-  },
-  {
-    id: "11",
-    name: "Dr. Tajuddeen Gwadabe",
-    title: "Programs and MEL Lead",
-    organization: "Masakhane African Languages Hub",
-    location: "Africa",
-    bio: "Dr. Tajuddeen Gwadabe leads programs and monitoring, evaluation, and learning at Masakhane, a grassroots organization focused on NLP for African languages, working to ensure linguistic diversity in AI.",
-    topic: "African Languages in AI",
-    category: ["masterclass", "panel"],
-    image: "/speakers/tajuddeen-gwadabe.jpg",
-  },
-  {
-    id: "12",
-    name: "Alex Tsado",
-    title: "Co-Founder",
-    organization: "Ahura AI, Alliance 4 AI",
-    location: "Nigeria",
-    bio: "Alex Tsado is Co-Founder of Ahura AI and Alliance 4 AI, working at the forefront of AI entrepreneurship in Africa. He focuses on building AI solutions for African challenges and fostering AI innovation ecosystems.",
-    topic: "AI Entrepreneurship in Africa",
-    category: ["panel", "workshop"],
-    image: "/speakers/alex-tsado.jpg",
-  },
-];
-
-const CATEGORY_CONFIG = {
+// Type-specific icons and colors
+const CATEGORY_CONFIG: Record<
+  string,
+  { label: string; icon: any; color: string }
+> = {
   all: { label: "All Speakers", icon: Users, color: "primary" },
   keynote: { label: "Keynote", icon: Mic2, color: "red" },
   masterclass: { label: "Masterclass", icon: GraduationCap, color: "blue" },
   panel: { label: "Panel", icon: MessageSquare, color: "green" },
   workshop: { label: "Workshop", icon: Building2, color: "purple" },
+  ceremony: { label: "Ceremony", icon: Sparkles, color: "yellow" },
+  talk: { label: "Talk", icon: User, color: "indigo" },
 };
 
 function SpeakerCard({
   speaker,
   onClick,
+  index,
 }: {
   speaker: Speaker;
   onClick: () => void;
+  index: number;
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: index * 0.03 }}
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
@@ -202,16 +69,29 @@ function SpeakerCard({
               .slice(0, 2)}
           </span>
         </div>
-        {/* Actual image - lazy loaded */}
+        {/* Actual image - lazy loaded with blur-up */}
+        {speaker.blurDataURL && (
+          <img
+            src={speaker.blurDataURL}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover blur-sm"
+            aria-hidden="true"
+          />
+        )}
         <img
           src={speaker.image}
           alt={speaker.name}
           loading="lazy"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
           onError={(e) => {
             // Hide image if it fails to load, showing initials instead
             e.currentTarget.style.display = "none";
           }}
+          onLoad={(e) => {
+            // Fade in smoothly
+            e.currentTarget.style.opacity = "1";
+          }}
+          style={{ opacity: 0 }}
         />
       </div>
 
@@ -224,7 +104,7 @@ function SpeakerCard({
           {speaker.title}
         </p>
         <div className="flex items-start gap-2 mb-3">
-          <Building2 className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0 mt-0.5" />
+          <Building2 className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
           <p className="text-xs text-muted-foreground line-clamp-2">
             {speaker.organization}
           </p>
@@ -234,6 +114,7 @@ function SpeakerCard({
         <div className="flex flex-wrap gap-1.5">
           {speaker.category.map((cat) => {
             const config = CATEGORY_CONFIG[cat];
+            if (!config) return null; // Safety check
             const Icon = config.icon;
             return (
               <span
@@ -284,6 +165,16 @@ function SpeakerModal({
             <X className="w-5 h-5" />
           </button>
 
+          {/* Blur placeholder */}
+          {speaker.blurDataURL && (
+            <img
+              src={speaker.blurDataURL}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover blur-sm"
+              aria-hidden="true"
+            />
+          )}
+
           {/* Placeholder */}
           <div className="absolute inset-0 flex items-center justify-center bg-muted">
             <span className="text-6xl font-bold text-muted-foreground opacity-30">
@@ -330,6 +221,7 @@ function SpeakerModal({
           <div className="flex flex-wrap gap-2">
             {speaker.category.map((cat) => {
               const config = CATEGORY_CONFIG[cat];
+              if (!config) return null; // Safety check
               const Icon = config.icon;
               return (
                 <span
@@ -361,33 +253,40 @@ function SpeakerModal({
             </p>
           </div>
 
-          {/* Social links */}
-          {(speaker.linkedin || speaker.twitter) && (
-            <div className="flex gap-3 pt-2">
-              {speaker.linkedin && (
-                <a
-                  href={speaker.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors text-sm font-medium"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  LinkedIn
-                </a>
-              )}
-              {speaker.twitter && (
-                <a
-                  href={speaker.twitter}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors text-sm font-medium"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  Twitter
-                </a>
-              )}
-            </div>
-          )}
+          {/* Contact & Social links */}
+          <div className="flex gap-3 pt-2 flex-wrap">
+            {speaker.email && (
+              <a
+                href={`mailto:${speaker.email}`}
+                className="flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors text-sm font-medium"
+              >
+                <Mail className="w-4 h-4" />
+                Email
+              </a>
+            )}
+            {speaker.linkedin && (
+              <a
+                href={speaker.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors text-sm font-medium"
+              >
+                <ExternalLink className="w-4 h-4" />
+                LinkedIn
+              </a>
+            )}
+            {speaker.twitter && (
+              <a
+                href={speaker.twitter}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-colors text-sm font-medium"
+              >
+                <ExternalLink className="w-4 h-4" />
+                Twitter
+              </a>
+            )}
+          </div>
         </div>
       </motion.div>
     </motion.div>
@@ -400,20 +299,28 @@ export default function SpeakersPage() {
     useState<SpeakerCategory>("all");
   const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker | null>(null);
 
-  const filteredSpeakers = SPEAKERS.filter((speaker) => {
-    const matchesSearch =
-      speaker.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      speaker.organization.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      speaker.topic?.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredSpeakers = useMemo(() => {
+    let speakers = SPEAKERS;
 
-    const matchesCategory =
-      selectedCategory === "all" || speaker.category.includes(selectedCategory);
+    // Apply category filter
+    if (selectedCategory !== "all") {
+      speakers = getSpeakersByCategory(selectedCategory);
+    }
 
-    return matchesSearch && matchesCategory;
-  });
+    // Apply search
+    if (searchQuery.trim()) {
+      speakers = searchSpeakers(searchQuery).filter((speaker) =>
+        selectedCategory === "all"
+          ? true
+          : speaker.category.includes(selectedCategory)
+      );
+    }
+
+    return speakers;
+  }, [searchQuery, selectedCategory]);
 
   return (
-    <div className="px-4 py-6 sm:px-6 sm:py-8">
+    <div className="px-4 py-6 sm:px-6 sm:py-8 pb-24">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -492,17 +399,12 @@ export default function SpeakersPage() {
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
       >
         {filteredSpeakers.map((speaker, idx) => (
-          <motion.div
+          <SpeakerCard
             key={speaker.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 * idx }}
-          >
-            <SpeakerCard
-              speaker={speaker}
-              onClick={() => setSelectedSpeaker(speaker)}
-            />
-          </motion.div>
+            speaker={speaker}
+            onClick={() => setSelectedSpeaker(speaker)}
+            index={idx}
+          />
         ))}
       </motion.div>
 
@@ -530,12 +432,14 @@ export default function SpeakersPage() {
       )}
 
       {/* Speaker modal */}
-      {selectedSpeaker && (
-        <SpeakerModal
-          speaker={selectedSpeaker}
-          onClose={() => setSelectedSpeaker(null)}
-        />
-      )}
+      <AnimatePresence>
+        {selectedSpeaker && (
+          <SpeakerModal
+            speaker={selectedSpeaker}
+            onClose={() => setSelectedSpeaker(null)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Add custom scrollbar styles */}
       <style jsx>{`

@@ -1,19 +1,21 @@
-"use client"
+"use client";
 
-import { motion, AnimatePresence } from "framer-motion"
-import { Phone, X } from "lucide-react"
-import { useState } from "react"
-import { useAppStore } from "@/store/app-store"
+import { motion, AnimatePresence } from "framer-motion";
+import { Phone, X } from "lucide-react";
+import { useState } from "react";
+import { useAppStore } from "@/store/app-store";
 
 const emergencyContacts = [
   { name: "Conference Helpline", number: "+234 (0) 123-4567" },
   { name: "Medical Emergency", number: "+234 (0) 987-6543" },
   { name: "Security", number: "+234 (0) 456-7890" },
-]
+];
 
 export function EmergencyFAB() {
-  const [isOpen, setIsOpen] = useState(false)
-  const showEmergencyContacts = useAppStore((state) => state.showEmergencyContacts)
+  const [isOpen, setIsOpen] = useState(false);
+  const showEmergencyContacts = useAppStore(
+    (state) => state.showEmergencyContacts
+  );
 
   return (
     <div className="fixed bottom-24 right-4 z-40" data-testid="emergency-fab">
@@ -40,10 +42,18 @@ export function EmergencyFAB() {
                 role="menuitem"
                 aria-label={`Call ${contact.name}: ${contact.number}`}
               >
-                <Phone size={18} className="text-primary flex-shrink-0" aria-hidden="true" />
+                <Phone
+                  size={18}
+                  className="text-primary shrink-0"
+                  aria-hidden="true"
+                />
                 <div className="text-sm">
-                  <p className="font-semibold text-foreground">{contact.name}</p>
-                  <p className="text-xs text-muted-foreground">{contact.number}</p>
+                  <p className="font-semibold text-foreground">
+                    {contact.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {contact.number}
+                  </p>
                 </div>
               </motion.a>
             ))}
@@ -87,5 +97,5 @@ export function EmergencyFAB() {
         </motion.div>
       </motion.button>
     </div>
-  )
+  );
 }

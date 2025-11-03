@@ -1,38 +1,38 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { WifiOff, WifiIcon } from "lucide-react"
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { WifiOff, WifiIcon } from "lucide-react";
 
 export function OfflineIndicator() {
-  const [isOnline, setIsOnline] = useState(true)
-  const [showOnlineMessage, setShowOnlineMessage] = useState(false)
+  const [isOnline, setIsOnline] = useState(true);
+  const [showOnlineMessage, setShowOnlineMessage] = useState(false);
 
   useEffect(() => {
     // Set initial state
-    setIsOnline(navigator.onLine)
+    setIsOnline(navigator.onLine);
 
     const handleOnline = () => {
-      setIsOnline(true)
-      setShowOnlineMessage(true)
+      setIsOnline(true);
+      setShowOnlineMessage(true);
       // Auto-hide message after 3 seconds
-      const timer = setTimeout(() => setShowOnlineMessage(false), 3000)
-      return () => clearTimeout(timer)
-    }
+      const timer = setTimeout(() => setShowOnlineMessage(false), 3000);
+      return () => clearTimeout(timer);
+    };
 
     const handleOffline = () => {
-      setIsOnline(false)
-      setShowOnlineMessage(true)
-    }
+      setIsOnline(false);
+      setShowOnlineMessage(true);
+    };
 
-    window.addEventListener("online", handleOnline)
-    window.addEventListener("offline", handleOffline)
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
 
     return () => {
-      window.removeEventListener("online", handleOnline)
-      window.removeEventListener("offline", handleOffline)
-    }
-  }, [])
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   return (
     <AnimatePresence>
@@ -47,8 +47,10 @@ export function OfflineIndicator() {
           aria-label="Offline status"
         >
           <div className="flex items-center justify-center gap-2 text-yellow-800">
-            <WifiOff className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-            <span className="text-sm font-medium">You are offline - using cached data</span>
+            <WifiOff className="w-4 h-4 shrink-0" aria-hidden="true" />
+            <span className="text-sm font-medium">
+              You are offline - using cached data
+            </span>
           </div>
         </motion.div>
       )}
@@ -64,11 +66,13 @@ export function OfflineIndicator() {
           aria-label="Online status"
         >
           <div className="flex items-center justify-center gap-2 text-green-800">
-            <WifiIcon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-            <span className="text-xs font-medium">Back online - syncing updates</span>
+            <WifiIcon className="w-4 h-4 shrink-0" aria-hidden="true" />
+            <span className="text-xs font-medium">
+              Back online - syncing updates
+            </span>
           </div>
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }

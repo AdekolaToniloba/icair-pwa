@@ -488,7 +488,7 @@ function HotelCard({
                 onSelect(hotel.id);
               }}
               whileTap={{ scale: 0.9 }}
-              className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center ${
+              className={`shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center ${
                 isSelected ? "bg-primary border-primary" : "border-border"
               }`}
               data-testid={`checkbox-${hotel.id}`}
@@ -503,7 +503,7 @@ function HotelCard({
           )}
 
           {/* Hotel Image/Icon */}
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <div className="h-16 w-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg flex items-center justify-center">
               <span className="text-2xl" aria-hidden="true">
                 🏨

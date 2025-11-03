@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { Cloud } from "lucide-react"
-import { motion } from "framer-motion"
+import { Cloud } from "lucide-react";
+import { motion } from "framer-motion";
 
 export function WeatherWidget() {
   return (
@@ -24,5 +24,5 @@ export function WeatherWidget() {
         <p className="text-sm text-muted-foreground">28°C, Partly Cloudy</p>
       </div>
     </motion.div>
-  )
+  );
 }

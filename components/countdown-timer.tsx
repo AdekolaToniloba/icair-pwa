@@ -131,7 +131,7 @@ const TimeUnitDisplay = memo(
 
         {/* Label with gradient text */}
         <motion.p
-          className="text-xs sm:text-sm font-bold mt-2 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent uppercase tracking-wide"
+          className="text-xs sm:text-sm font-bold mt-2 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-white uppercase tracking-wide"
           animate={{
             opacity: [0.7, 1, 0.7],
           }}
@@ -294,14 +294,14 @@ export function CountdownTimer({ targetDate }: CountdownProps) {
       </motion.div>
 
       {/* Date display */}
-      <motion.p
-        className="text-center text-xs sm:text-sm text-muted-foreground mt-4 font-medium"
+      {/* <motion.p
+        className="text-center text-xs sm:text-sm text-white mt-4 font-medium"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
       >
         Tuesday, November 4, 2025 • 9:00 AM WAT
-      </motion.p>
+      </motion.p> */}
     </motion.div>
   );
 }

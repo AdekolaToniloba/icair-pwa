@@ -52,7 +52,7 @@ function InfoCard({ icon: Icon, title, children, delay = 0 }: InfoCardProps) {
       className="bg-card border border-border rounded-xl p-6 hover:border-primary/30 transition-all hover:shadow-lg"
     >
       <div className="flex items-start gap-4">
-        <div className="flex-shrink-0 p-3 bg-primary/10 rounded-lg">
+        <div className="shrink-0 p-3 bg-primary/10 rounded-lg">
           <Icon className="w-6 h-6 text-primary" />
         </div>
         <div className="flex-1 space-y-3">
@@ -102,7 +102,7 @@ function AccommodationCard({
             href={link}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-shrink-0 p-1.5 hover:bg-primary/10 rounded-md transition-colors"
+            className="shrink-0 p-1.5 hover:bg-primary/10 rounded-md transition-colors"
             aria-label={`Visit ${name} website`}
           >
             <ExternalLink className="w-4 h-4 text-primary" />
@@ -268,7 +268,7 @@ export default function TravelGuidePage() {
 
           <InfoCard icon={ShieldCheck} title="Travel insurance" delay={0.4}>
             <div className="flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p>
                 We strongly recommend travel insurance that covers medical
                 emergencies and trip changes. Better safe than sorry.
@@ -337,9 +337,9 @@ export default function TravelGuidePage() {
           </motion.a>
         </div>
 
-        <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border border-primary/20 rounded-xl p-6 mb-6">
+        <div className="bg-gradient-to-br from-primary/5 to-secondary/5 border border-primary/20 rounded-xl p-6 mb-6">
           <div className="flex items-start gap-3">
-            <Heart className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+            <Heart className="w-5 h-5 text-primary shrink-0 mt-0.5" />
             <div>
               <h3 className="font-bold text-foreground mb-2">
                 Our top pick: Unilag Guest House
@@ -405,7 +405,7 @@ export default function TravelGuidePage() {
           transition={{ delay: 0.8 }}
           className="bg-muted/30 rounded-lg p-4 flex items-start gap-3"
         >
-          <AlertCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
           <p className="text-sm text-muted-foreground">
             <span className="font-semibold text-foreground">Pro tip:</span> Book
             early. Lagos traffic and demand can mean limited availability,
@@ -434,7 +434,7 @@ export default function TravelGuidePage() {
             </h3>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
-                <span className="flex-shrink-0 w-1.5 h-1.5 bg-primary rounded-full mt-2" />
+                <span className="shrink-0 w-1.5 h-1.5 bg-primary rounded-full mt-2" />
                 <div>
                   <span className="font-semibold text-foreground">
                     Rideshares (Bolt, Uber):
@@ -444,7 +444,7 @@ export default function TravelGuidePage() {
                 </div>
               </li>
               <li className="flex items-start gap-2">
-                <span className="flex-shrink-0 w-1.5 h-1.5 bg-primary rounded-full mt-2" />
+                <span className="shrink-0 w-1.5 h-1.5 bg-primary rounded-full mt-2" />
                 <div>
                   <span className="font-semibold text-foreground">
                     Private taxi:
@@ -453,7 +453,7 @@ export default function TravelGuidePage() {
                 </div>
               </li>
               <li className="flex items-start gap-2">
-                <span className="flex-shrink-0 w-1.5 h-1.5 bg-primary rounded-full mt-2" />
+                <span className="shrink-0 w-1.5 h-1.5 bg-primary rounded-full mt-2" />
                 <div>
                   <span className="font-semibold text-foreground">
                     BRT / Local buses:
@@ -471,7 +471,7 @@ export default function TravelGuidePage() {
             transition={{ delay: 0.9 }}
             className="bg-muted/30 rounded-lg p-4 flex items-start gap-3"
           >
-            <AlertCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
             <p className="text-sm text-muted-foreground">
               Allow extra time during peak commute hours. Lagos traffic is real
               — build in buffer time to avoid stress.
@@ -495,7 +495,7 @@ export default function TravelGuidePage() {
         <div className="space-y-4">
           <div className="bg-card border border-border rounded-xl p-6">
             <div className="flex items-start gap-4 mb-4">
-              <div className="flex-shrink-0 p-3 bg-primary/10 rounded-lg">
+              <div className="shrink-0 p-3 bg-primary/10 rounded-lg">
                 <MapPin className="w-6 h-6 text-primary" />
               </div>
               <div className="flex-1">
@@ -519,7 +519,7 @@ export default function TravelGuidePage() {
               </h4>
               <div className="grid gap-3">
                 <div className="flex items-start gap-3">
-                  <Wifi className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                  <Wifi className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <p className="text-sm text-foreground font-medium">
                       Venue Wi-Fi
@@ -532,7 +532,7 @@ export default function TravelGuidePage() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <Coffee className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                  <Coffee className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <p className="text-sm text-foreground font-medium">
                       Café & charging
@@ -544,7 +544,7 @@ export default function TravelGuidePage() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <ShieldCheck className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                  <ShieldCheck className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <p className="text-sm text-foreground font-medium">
                       Safety & support

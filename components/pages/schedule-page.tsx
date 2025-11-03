@@ -22,6 +22,8 @@ import {
   Sparkles,
   FileText,
   TrendingUp,
+  Calendar,
+  X,
 } from "lucide-react";
 import { useScheduleStore } from "@/store/schedule-store";
 import {
@@ -153,6 +155,7 @@ export default function SchedulePage() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
   const [expandedSession, setExpandedSession] = useState<string | null>(null);
+  const [calendarMenuOpen, setCalendarMenuOpen] = useState<string | null>(null);
   const { starredSessions, toggleStarSession } = useScheduleStore();
 
   // Get all unique types and tracks
@@ -171,6 +174,101 @@ export default function SchedulePage() {
         .map((s) => s.track)
     )
   );
+
+  // Helper function to get session date/time
+  const getSessionDateTime = (session: Session) => {
+    let sessionDate = "2025-11-04";
+    for (const [key, day] of Object.entries(CONFERENCE_SCHEDULE)) {
+      if (day.sessions.some((s) => s.id === session.id)) {
+        if (key === "Day 2") sessionDate = "2025-11-05";
+        if (key === "Day 3") sessionDate = "2025-11-06";
+        break;
+      }
+    }
+
+    const [startHour, startMin] = session.time
+      .split("-")[0]
+      .trim()
+      .split(":")
+      .map(Number);
+    const [endHour, endMin] = session.time
+      .split("-")[1]
+      .trim()
+      .split(":")
+      .map(Number);
+
+    const start = new Date(
+      `${sessionDate}T${String(startHour).padStart(2, "0")}:${String(
+        startMin || 0
+      ).padStart(2, "0")}:00`
+    );
+    const end = new Date(
+      `${sessionDate}T${String(endHour).padStart(2, "0")}:${String(
+        endMin || 0
+      ).padStart(2, "0")}:00`
+    );
+
+    return { start, end, sessionDate };
+  };
+
+  // Generate ICS file for download
+  const generateICS = (session: Session) => {
+    const { start, end } = getSessionDateTime(session);
+
+    const ical = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//MIRG-ICAIR Conference//EN
+BEGIN:VEVENT
+UID:${session.id}@unilag.edu
+DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}Z
+DTSTART:${start.toISOString().replace(/[-:]/g, "").split(".")[0]}Z
+DTEND:${end.toISOString().replace(/[-:]/g, "").split(".")[0]}Z
+SUMMARY:${session.title}
+DESCRIPTION:${session.description}${
+      session.speakers
+        ? "\\n\\nSpeakers: " + session.speakers.map((s) => s.name).join(", ")
+        : ""
+    }
+LOCATION:${session.room}, University of Lagos
+END:VEVENT
+END:VCALENDAR`;
+
+    const blob = new Blob([ical], { type: "text/calendar" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${session.title.replace(/\s+/g, "_")}.ics`;
+    link.click();
+    setCalendarMenuOpen(null);
+  };
+
+  // Add to Google Calendar
+  const addToGoogleCalendar = (session: Session) => {
+    const { start, end } = getSessionDateTime(session);
+
+    const formatGoogleDate = (date: Date) => {
+      return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+    };
+
+    const details = encodeURIComponent(
+      `${session.description}\n\n${
+        session.speakers
+          ? "Speakers: " + session.speakers.map((s) => s.name).join(", ")
+          : ""
+      }`
+    );
+
+    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+      session.title
+    )}&dates=${formatGoogleDate(start)}/${formatGoogleDate(
+      end
+    )}&details=${details}&location=${encodeURIComponent(
+      `${session.room}, University of Lagos`
+    )}`;
+
+    window.open(url, "_blank");
+    setCalendarMenuOpen(null);
+  };
 
   // Filter and search logic
   const filteredSessions = useMemo(() => {
@@ -255,65 +353,6 @@ export default function SchedulePage() {
     return grouped;
   }, [filteredSessions]);
 
-  const generateICS = (session: Session, daySchedule?: DaySchedule) => {
-    // Find which day this session belongs to
-    let sessionDate = "2025-11-04";
-    for (const [key, day] of Object.entries(CONFERENCE_SCHEDULE)) {
-      if (day.sessions.some((s) => s.id === session.id)) {
-        if (key === "Day 2") sessionDate = "2025-11-05";
-        if (key === "Day 3") sessionDate = "2025-11-06";
-        break;
-      }
-    }
-
-    const [startHour, startMin] = session.time
-      .split("-")[0]
-      .trim()
-      .split(":")
-      .map(Number);
-    const [endHour, endMin] = session.time
-      .split("-")[1]
-      .trim()
-      .split(":")
-      .map(Number);
-
-    const start = new Date(
-      `${sessionDate}T${String(startHour).padStart(2, "0")}:${String(
-        startMin || 0
-      ).padStart(2, "0")}:00`
-    );
-    const end = new Date(
-      `${sessionDate}T${String(endHour).padStart(2, "0")}:${String(
-        endMin || 0
-      ).padStart(2, "0")}:00`
-    );
-
-    const ical = `BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//MIRG-ICAIR Conference//EN
-BEGIN:VEVENT
-UID:${session.id}@unilag.edu
-DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}Z
-DTSTART:${start.toISOString().replace(/[-:]/g, "").split(".")[0]}Z
-DTEND:${end.toISOString().replace(/[-:]/g, "").split(".")[0]}Z
-SUMMARY:${session.title}
-DESCRIPTION:${session.description}${
-      session.speakers
-        ? "\\n\\nSpeakers: " + session.speakers.map((s) => s.name).join(", ")
-        : ""
-    }
-LOCATION:${session.room}, University of Lagos
-END:VEVENT
-END:VCALENDAR`;
-
-    const blob = new Blob([ical], { type: "text/calendar" });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${session.title.replace(/\s+/g, "_")}.ics`;
-    link.click();
-  };
-
   const currentDayInfo = CONFERENCE_SCHEDULE[selectedDay];
 
   return (
@@ -385,7 +424,7 @@ END:VCALENDAR`;
                   onClick={() => setSelectedDay(key as any)}
                   whileTap={{ scale: 0.95 }}
                   whileHover={{ scale: isActive ? 1 : 1.02 }}
-                  className={`flex-shrink-0 px-5 py-3 rounded-xl text-sm font-semibold transition-all ${
+                  className={`shrink-0 px-5 py-3 rounded-xl text-sm font-semibold transition-all ${
                     isActive
                       ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg"
                       : "bg-card border border-border text-foreground hover:border-primary/40"
@@ -533,10 +572,7 @@ END:VCALENDAR`;
               data-testid="conflict-warning"
               role="alert"
             >
-              <AlertCircle
-                size={20}
-                className="text-red-600 flex-shrink-0 mt-0.5"
-              />
+              <AlertCircle size={20} className="text-red-600 shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold text-red-900">Schedule Conflict</p>
                 <p className="text-sm text-red-800">
@@ -590,6 +626,13 @@ END:VCALENDAR`;
                     }
                     hasConflict={conflicts.has(session.id)}
                     onDownloadICS={() => generateICS(session)}
+                    onGoogleCalendar={() => addToGoogleCalendar(session)}
+                    calendarMenuOpen={calendarMenuOpen === session.id}
+                    onToggleCalendarMenu={() =>
+                      setCalendarMenuOpen(
+                        calendarMenuOpen === session.id ? null : session.id
+                      )
+                    }
                   />
                 ))
               )}
@@ -647,6 +690,17 @@ END:VCALENDAR`;
                             }
                             hasConflict={conflicts.has(session.id)}
                             onDownloadICS={() => generateICS(session)}
+                            onGoogleCalendar={() =>
+                              addToGoogleCalendar(session)
+                            }
+                            calendarMenuOpen={calendarMenuOpen === session.id}
+                            onToggleCalendarMenu={() =>
+                              setCalendarMenuOpen(
+                                calendarMenuOpen === session.id
+                                  ? null
+                                  : session.id
+                              )
+                            }
                           />
                         ))}
                       </div>
@@ -694,6 +748,13 @@ END:VCALENDAR`;
                     }
                     hasConflict={conflicts.has(session.id)}
                     onDownloadICS={() => generateICS(session)}
+                    onGoogleCalendar={() => addToGoogleCalendar(session)}
+                    calendarMenuOpen={calendarMenuOpen === session.id}
+                    onToggleCalendarMenu={() =>
+                      setCalendarMenuOpen(
+                        calendarMenuOpen === session.id ? null : session.id
+                      )
+                    }
                   />
                 ))
               )}
@@ -726,6 +787,9 @@ function SessionCard({
   onToggleExpand,
   hasConflict,
   onDownloadICS,
+  onGoogleCalendar,
+  calendarMenuOpen,
+  onToggleCalendarMenu,
 }: {
   session: Session;
   index: number;
@@ -735,6 +799,9 @@ function SessionCard({
   onToggleExpand: () => void;
   hasConflict: boolean;
   onDownloadICS: () => void;
+  onGoogleCalendar: () => void;
+  calendarMenuOpen: boolean;
+  onToggleCalendarMenu: () => void;
 }) {
   const typeConfig = TYPE_CONFIG[session.type];
   const TypeIcon = typeConfig.icon;
@@ -761,7 +828,7 @@ function SessionCard({
           {/* Type Icon */}
           <motion.div
             whileHover={{ rotate: 5, scale: 1.1 }}
-            className={`flex-shrink-0 w-10 h-10 rounded-lg ${typeConfig.bg} flex items-center justify-center`}
+            className={`shrink-0 w-10 h-10 rounded-lg ${typeConfig.bg} flex items-center justify-center`}
           >
             <TypeIcon className={typeConfig.color} size={20} />
           </motion.div>
@@ -799,7 +866,7 @@ function SessionCard({
                 }}
                 whileTap={{ scale: 0.85 }}
                 whileHover={{ scale: 1.1 }}
-                className="p-2 hover:bg-primary/10 rounded-lg transition-colors flex-shrink-0"
+                className="p-2 hover:bg-primary/10 rounded-lg transition-colors shrink-0"
                 data-testid={`star-${session.id}`}
               >
                 <motion.div
@@ -900,7 +967,7 @@ function SessionCard({
                           Moderator
                         </h4>
                         <div className="flex items-center gap-2 text-sm">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                             <User size={14} className="text-primary" />
                           </div>
                           <div>
@@ -932,7 +999,7 @@ function SessionCard({
                               transition={{ delay: idx * 0.05 }}
                               className="flex items-center gap-2 text-sm"
                             >
-                              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                                 <User size={14} className="text-primary" />
                               </div>
                               <div>
@@ -978,20 +1045,62 @@ function SessionCard({
                       </div>
                     )}
 
-                    {/* Action Button */}
-                    <motion.button
-                      whileTap={{ scale: 0.95 }}
-                      whileHover={{ scale: 1.02 }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDownloadICS();
-                      }}
-                      className="w-full px-4 py-2.5 bg-primary text-primary-foreground rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 shadow-sm"
-                      data-testid={`calendar-${session.id}`}
-                    >
-                      <Download size={16} />
-                      Add to Calendar
-                    </motion.button>
+                    {/* Calendar Action Button with Dropdown */}
+                    <div className="relative">
+                      <motion.button
+                        whileTap={{ scale: 0.95 }}
+                        whileHover={{ scale: 1.02 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onToggleCalendarMenu();
+                        }}
+                        className="w-full px-4 py-2.5 bg-primary text-primary-foreground rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 shadow-sm"
+                        data-testid={`calendar-${session.id}`}
+                      >
+                        <Calendar size={16} />
+                        Add to Calendar
+                      </motion.button>
+
+                      {/* Calendar Options Dropdown */}
+                      <AnimatePresence>
+                        {calendarMenuOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                            transition={{ duration: 0.2 }}
+                            className="absolute bottom-full left-0 right-0 mb-2 bg-card border border-border rounded-lg shadow-lg overflow-hidden z-10"
+                          >
+                            <motion.button
+                              whileTap={{ scale: 0.98 }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onGoogleCalendar();
+                              }}
+                              className="w-full px-4 py-3 text-left hover:bg-muted transition-colors flex items-center gap-3 text-sm"
+                            >
+                              <Calendar size={16} className="text-primary" />
+                              <span className="font-medium">
+                                Google Calendar
+                              </span>
+                            </motion.button>
+                            <motion.button
+                              whileTap={{ scale: 0.98 }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onDownloadICS();
+                              }}
+                              className="w-full px-4 py-3 text-left hover:bg-muted transition-colors flex items-center gap-3 text-sm border-t border-border"
+                            >
+                              <Download size={16} className="text-primary" />
+                              <span className="font-medium">
+                                Apple Calendar / Outlook
+                              </span>
+                            </motion.button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   </div>
                 </motion.div>
               )}
