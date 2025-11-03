@@ -7,8 +7,6 @@ import Header from "@/components/layout/header";
 import BottomNav from "@/components/layout/bottom-nav";
 import { AnimatePresence, motion } from "framer-motion";
 import { UnifiedPageWrapper } from "@/components/unified-page-wrapper";
-import { useNotifications } from "@/hooks/use-notifications";
-import SimpleNotificationTest from "@/components/simple-notification-test";
 
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -29,8 +27,6 @@ export default function ClientLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { permission, isInitialized } = useNotifications();
-
   return (
     <Providers>
       <div className="min-h-screen bg-background flex flex-col">
@@ -63,7 +59,6 @@ export default function ClientLayout({
           `,
         }}
       />
-      <SimpleNotificationTest />
     </Providers>
   );
 }

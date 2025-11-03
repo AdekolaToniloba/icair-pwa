@@ -57,8 +57,8 @@ function SpeakerCard({
       onClick={onClick}
       className="bg-card border border-border rounded-xl overflow-hidden cursor-pointer hover:border-primary/40 hover:shadow-lg transition-all"
     >
-      {/* Image */}
-      <div className="relative h-48 bg-gradient-to-br from-primary/20 to-secondary/20 overflow-hidden">
+      {/* Image - INCREASED HEIGHT from h-48 to h-64 (256px) */}
+      <div className="relative h-64 bg-gradient-to-br from-primary/20 to-secondary/20 overflow-hidden">
         {/* Placeholder with initials if no image loaded */}
         <div className="absolute inset-0 flex items-center justify-center bg-muted">
           <span className="text-4xl font-bold text-muted-foreground opacity-30">
@@ -82,7 +82,12 @@ function SpeakerCard({
           src={speaker.image}
           alt={speaker.name}
           loading="lazy"
+          // ADDED: object-position to prioritize showing the top/face area
           className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+          style={{
+            opacity: 0,
+            objectPosition: "center top", // Prioritize showing face/top of image
+          }}
           onError={(e) => {
             // Hide image if it fails to load, showing initials instead
             e.currentTarget.style.display = "none";
@@ -91,7 +96,6 @@ function SpeakerCard({
             // Fade in smoothly
             e.currentTarget.style.opacity = "1";
           }}
-          style={{ opacity: 0 }}
         />
       </div>
 
@@ -114,7 +118,7 @@ function SpeakerCard({
         <div className="flex flex-wrap gap-1.5">
           {speaker.category.map((cat) => {
             const config = CATEGORY_CONFIG[cat];
-            if (!config) return null; // Safety check
+            if (!config) return null;
             const Icon = config.icon;
             return (
               <span
@@ -152,7 +156,8 @@ function SpeakerModal({
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-border shadow-2xl"
+        // ADDED: pb-24 to account for bottom nav
+        className="bg-card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-border shadow-2xl pb-24"
       >
         {/* Header with image */}
         <div className="relative h-64 bg-gradient-to-br from-primary/20 to-secondary/20">
@@ -186,20 +191,21 @@ function SpeakerModal({
             </span>
           </div>
 
-          {/* Actual image */}
+          {/* Actual image - ADDED object-position */}
           <img
             src={speaker.image}
             alt={speaker.name}
             loading="lazy"
             className="absolute inset-0 w-full h-full object-cover"
+            style={{ objectPosition: "center top" }}
             onError={(e) => {
               e.currentTarget.style.display = "none";
             }}
           />
         </div>
 
-        {/* Content */}
-        <div className="p-6 space-y-4">
+        {/* Content - ADDED pb-8 for extra bottom padding */}
+        <div className="p-6 space-y-4 pb-8">
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-2">
               {speaker.name}
@@ -221,7 +227,7 @@ function SpeakerModal({
           <div className="flex flex-wrap gap-2">
             {speaker.category.map((cat) => {
               const config = CATEGORY_CONFIG[cat];
-              if (!config) return null; // Safety check
+              if (!config) return null;
               const Icon = config.icon;
               return (
                 <span
