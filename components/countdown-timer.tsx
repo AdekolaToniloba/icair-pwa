@@ -241,7 +241,7 @@ export function CountdownTimer({ targetDate }: CountdownProps) {
             repeatDelay: 3,
           }}
         >
-          <Calendar className="w-5 h-5 text-primary" />
+          <Calendar className="w-5 h-5 text-white" />
         </motion.div>
         <h3 className="text-sm sm:text-base font-bold text-foreground uppercase tracking-wide">
           Conference Starts In
@@ -257,7 +257,7 @@ export function CountdownTimer({ targetDate }: CountdownProps) {
             delay: 0.5,
           }}
         >
-          <Clock className="w-5 h-5 text-primary" />
+          <Clock className="w-5 h-5 text-white" />
         </motion.div>
       </motion.div>
 
