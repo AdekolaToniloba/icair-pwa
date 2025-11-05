@@ -82,7 +82,7 @@ export const SPEAKERS: Speaker[] = [
     bio: "Dr. Victor Odumuyiwa serves as the Conference Chair for MIRG-ICAIR 2025 and chairs the Machine Intelligence Research Group (MIRG) at the University of Lagos. His research focuses on machine learning, data mining, and AI applications in African contexts.",
     topic: "Conference Opening & AI Research in Africa",
     category: ["ceremony"],
-    image: "/speakers/victor-odumuyiwa.webp",
+    image: "/speakers/victor-odumuyiwa.jpeg",
   },
   {
     id: "chika-yinka-banjo",
@@ -330,21 +330,11 @@ export const SPEAKERS: Speaker[] = [
     bio: "Dr Olayinka Omowunmi Adewumi is Senior Lecturer in the Department of Mechanical Engineering at University of Lagos (UNILAG), Nigeria, holding a PhD in Mechanical Engineering from University of Pretoria and an MSc from UNILAG. Her research focuses on enhancing thermal performance of fluid-flow and heat-transfer systems using theoretical and numerical methods. In addition to her academic role, she leads practical innovation initiatives: she heads the internship programme for S2PAfrica, integrating virtualised laboratories and hands-on design in engineering education, and in 2024 was appointed Acting Director of UNILAG's Innovation & Technology Management Office (ITMO).",
     topic: "University Innovation Ecosystems",
     category: ["panel"],
-    image: "/speakers/olayinka-adewumi.webp",
+    image: "/speakers/olayinka-adewumi.jpeg",
   },
 
   // MASTERCLASS FACILITATORS
-  {
-    id: "sodiq-facilitator",
-    name: "Mr. Sodiq",
-    title: "AI Facilitator",
-    organization: "Data Science Nigeria",
-    location: "Nigeria",
-    bio: "Mr. Sodiq is an experienced AI facilitator and trainer with Data Science Nigeria, specializing in hands-on workshops that introduce participants to fundamental AI concepts and practical applications.",
-    topic: "AI Fundamentals Masterclass",
-    category: ["masterclass"],
-    image: "/speakers/sodiq-facilitator.webp",
-  },
+
   {
     id: "alex-tsado",
     name: "Alex Tsado",
@@ -354,7 +344,7 @@ export const SPEAKERS: Speaker[] = [
     bio: "Alex Tsado is Co-Founder of Ahura AI and Alliance 4 AI, working at the forefront of AI entrepreneurship in Africa. He focuses on building AI solutions for African challenges and fostering AI innovation ecosystems. His expertise spans AI infrastructure, GPU computing, and accelerating AI innovation across the continent.",
     topic: "Accelerating AI Innovation: Africa GPU Hub",
     category: ["masterclass", "panel"],
-    image: "/speakers/alex-tsado.webp",
+    image: "/speakers/alex-tsado.jpg",
   },
 
   // ADDITIONAL SPEAKERS
@@ -367,7 +357,7 @@ export const SPEAKERS: Speaker[] = [
     bio: "Emeka is a Neuro-Symbolic AI Engineer with over 20 years of experience in Knowledge Engineering, Semantic Infrastructure Development, AI Data Context Engineering, and Generative AI. He specializes in bridging symbolic reasoning and neural intelligence to design transformative AI solutions that empower organizations on their digital transformation journeys. Emeka excels at converting complex data into unified, actionable intelligence networks and developing scalable architectures that enhance cognitive automation, decision-making, and innovation. He has co-founded two startups, worked with Openlink Software, the Land Portal Foundation (Netherlands), and currently serves as a Senior Knowledge Engineer at Syntaxia (USA).",
     topic: "Cognitive Prosthetics: Knowledge Graphs for Smart City Governance",
     category: ["talk"],
-    image: "/speakers/emeka-okoye.png",
+    image: "/speakers/emeka-okoye.jpg",
   },
   {
     id: "bayo-adekanmbi",
@@ -381,30 +371,8 @@ export const SPEAKERS: Speaker[] = [
     image: "/speakers/bayo-adekanmbi.jpeg",
   },
 
-  {
-    id: "folasade-ogunsola",
-    name: "Professor Folasade Ogunsola",
-    title: "Vice Chancellor",
-    organization: "University of Lagos",
-    location: "Nigeria",
-    bio: "Professor Folasade Ogunsola is the Vice Chancellor of the University of Lagos. She is a distinguished academic and administrator, leading one of Nigeria's premier universities.",
-    topic: "Opening Address",
-    category: ["ceremony"],
-    image: "/speakers/folasade-ogunsola.jpg",
-  },
-
   // ADDITIONAL INNOVATORS & SPEAKERS
-  {
-    id: "olubayo-adekanmbi",
-    name: "Dr. Oluwatobi Olabiyi",
-    title: "Director of Engineering, Generative AI Models",
-    organization: "NVIDIA",
-    location: "USA",
-    bio: "Dr Olabiyi is an engineer and researcher specialising in wireless communications, signal processing, and machine-learning for communication systems. He earned his B.Sc in Electronic & Electrical Engineering from Obafemi Awolowo University (Nigeria), followed by his M.S. and Ph.D. in Electrical Engineering from Prairie View A&M University (Texas, USA). Professionally, he has held senior research and engineering roles in machine-learning and conversational AI (including at Capital One) and currently serves in a leadership engineering position at NVIDIA driving AI/data-science initiatives that bridge advanced signal-processing and conversational/multimodal AI.",
-    topic: "Generative AI and Machine Learning at Scale",
-    category: ["keynote"],
-    image: "/speakers/oluwatobi-olabiyi.webp",
-  },
+
   {
     id: "sawyer-fuller",
     name: "Sawyer Fuller",
@@ -414,7 +382,7 @@ export const SPEAKERS: Speaker[] = [
     bio: "Sawyer Fuller is an Associate Professor of Mechanical Engineering (and Adjunct in Computer Science & Engineering) at University of Washington whose work revolves around biologically‐inspired robotics, especially insect‐scale aerial and ground vehicles. He earned his PhD in Bioengineering from California Institute of Technology and his B.S. and M.S. in Mechanical Engineering from Massachusetts Institute of Technology. His laboratory—known as the Autonomous Insect Robotics Laboratory—targets one of the frontier challenges in engineering: how to build fully autonomous robots as small as insects.",
     topic: "Bio-Inspired Robotics",
     category: ["keynote"],
-    image: "/speakers/sawyer-fuller.webp",
+    image: "/speakers/sawyer-fuller.jpeg",
   },
   {
     id: "silas-adekunle",
@@ -425,7 +393,7 @@ export const SPEAKERS: Speaker[] = [
     bio: "Silas Adekunle is a Nigerian-British robotics engineer and entrepreneur, celebrated for inventing the world's first intelligent gaming robot, MekaMon, through his company Reach Robotics. He holds a first-class Bachelor's degree in Robotics Technology from the University of the West of England (UWE Bristol) and began his entrepreneurial journey while still a student. Today, Adekunle is the CEO and co-founder of two ventures: Awarri, focused on advancing AI and robotics education and infrastructure in Africa, and Reach Industries, developing a visual-intelligence lab-automation platform called Lumi for use in scientific and industrial settings. His work has earned global recognition—including listings on Forbes 30 Under 30 and the Financial Times' Top 100 Minority Ethnic Leaders in Technology.",
     topic: "Robotics Innovation and Education",
     category: ["keynote"],
-    image: "/speakers/silas-adekunle.webp",
+    image: "/speakers/silas-adekunle.jpeg",
   },
   {
     id: "williams-onifade",
@@ -436,42 +404,7 @@ export const SPEAKERS: Speaker[] = [
     bio: "Prof. Olufade F. W. Onifade is a Nigerian academic specialising in computer science, currently serving at the University of Ibadan in Nigeria. He earned two PhDs — one from the University of Ibadan and another from Université Nancy 2 (France) — under a French government scholarship. His research spans information retrieval, pattern recognition, biometrics, fuzzy logic and computer vision. He has published 80+ academic papers, led the Pattern Recognition, Robotics & Intelligent Analytics Group at UI, and held fellowships such as the MIT-ETT and the CV Raman Fellowship for African researchers.",
     topic: "Pattern Recognition and Intelligent Systems",
     category: ["keynote"],
-    image: "/speakers/williams-onifade.webp",
-  },
-
-  // YOUNG INNOVATORS (Day 1 Panel)
-  {
-    id: "korin-ai-team",
-    name: "Korin AI Team",
-    title: "Young Innovators",
-    organization: "Korin AI",
-    location: "Nigeria",
-    bio: "The Korin AI team represents emerging young innovators developing AI-driven solutions for African challenges.",
-    topic: "Youth Innovation in AI",
-    category: ["panel"],
-    image: "/speakers/korin-ai.webp",
-  },
-  {
-    id: "dawn-ai-team",
-    name: "Dawn AI Team",
-    title: "Young Innovators",
-    organization: "Dawn AI",
-    location: "Nigeria",
-    bio: "Dawn AI is a student-led initiative developing innovative AI solutions for education and learning in Africa.",
-    topic: "AI for Education",
-    category: ["panel"],
-    image: "/speakers/dawn-ai.webp",
-  },
-  {
-    id: "yarngpt-team",
-    name: "YarnGPT Team",
-    title: "Young Innovators",
-    organization: "YarnGPT",
-    location: "Nigeria",
-    bio: "YarnGPT team is building innovative language models and AI tools focused on African contexts and storytelling.",
-    topic: "Language AI Innovation",
-    category: ["panel"],
-    image: "/speakers/yarngpt.webp",
+    image: "/speakers/williams-onifade.jpeg",
   },
 ];
 
@@ -541,10 +474,10 @@ export function getSpeakerByScheduleName(
     "Dr. Victor Odumuyiwa": "victor-odumuyiwa",
     "Dr. Bosun Tijani": "bosun-tijani",
     "Vice Chancellor": "folasade-ogunsola",
-    "Professor Folasade Ogunsola": "folasade-ogunsola",
-    "Korin AI Team": "korin-ai-team",
-    "Dawn AI Team": "dawn-ai-team",
-    "YarnGPT Team": "yarngpt-team",
+    // "Professor Folasade Ogunsola": "folasade-ogunsola",
+    // "Korin AI Team": "korin-ai-team",
+    // "Dawn AI Team": "dawn-ai-team",
+    // "YarnGPT Team": "yarngpt-team",
   };
 
   // Check direct name mapping first

@@ -13,12 +13,25 @@ import {
   ZoomOut,
   RotateCcw,
   X,
+  Star,
+  MapPin,
 } from "lucide-react";
 
 interface BoothSpace {
   id: string;
   name: string;
-  type: "booth" | "stage" | "seating" | "refreshment" | "registration";
+  type:
+    | "booth"
+    | "stage"
+    | "seating"
+    | "refreshment"
+    | "registration"
+    | "walkway"
+    | "vip"
+    | "poster"
+    | "vendor"
+    | "toilet"
+    | "mainhall";
   x: number;
   y: number;
   width: number;
@@ -29,102 +42,161 @@ interface BoothSpace {
   currentActivity?: string;
 }
 
+/**
+ * Updated coordinates with better spacing:
+ * - Narrower walkway (100px width instead of 140px)
+ * - Better separated bottom sections
+ * - Improved readability
+ */
 const venueSpaces: BoothSpace[] = [
-  {
-    id: "stage",
-    name: "Main Stage",
-    type: "stage",
-    x: 20,
-    y: 20,
-    width: 180,
-    height: 80,
-    color: "#00A651",
-    capacity: 500,
-    features: ["Audio System", "LED Screen", "Live Streaming"],
-    currentActivity: "Keynote Presentation",
-  },
-  {
-    id: "booth-1",
-    name: "Sponsor Booth A",
-    type: "booth",
-    x: 220,
-    y: 30,
-    width: 100,
-    height: 70,
-    color: "#FDB913",
-    features: ["Display Stand", "Demo Area"],
-  },
-  {
-    id: "booth-2",
-    name: "Sponsor Booth B",
-    type: "booth",
-    x: 340,
-    y: 30,
-    width: 100,
-    height: 70,
-    color: "#FDB913",
-    features: ["Display Stand", "Demo Area"],
-  },
-  {
-    id: "booth-3",
-    name: "Sponsor Booth C",
-    type: "booth",
-    x: 460,
-    y: 30,
-    width: 100,
-    height: 70,
-    color: "#FDB913",
-    features: ["Display Stand", "Demo Area"],
-  },
-  {
-    id: "seating-1",
-    name: "Seating Area 1",
-    type: "seating",
-    x: 20,
-    y: 120,
-    width: 140,
-    height: 100,
-    color: "#3B82F6",
-    capacity: 150,
-  },
-  {
-    id: "refreshment",
-    name: "Refreshment Zone",
-    type: "refreshment",
-    x: 180,
-    y: 120,
-    width: 120,
-    height: 80,
-    color: "#F59E0B",
-    features: ["Coffee Bar", "Snacks", "Water Station"],
-  },
-  {
-    id: "seating-2",
-    name: "Seating Area 2",
-    type: "seating",
-    x: 320,
-    y: 120,
-    width: 140,
-    height: 100,
-    color: "#3B82F6",
-    capacity: 150,
-  },
+  // Top Left - Registration Booth (Entrance area)
   {
     id: "registration",
-    name: "Registration Desk",
+    name: "Registration",
     type: "registration",
-    x: 480,
-    y: 120,
-    width: 80,
+    x: 20,
+    y: 20,
+    width: 120,
     height: 60,
     color: "#EF4444",
     features: ["Check-in", "Badge Printing", "Information"],
+  },
+
+  // Top Right - Vendors area
+  {
+    id: "vendors",
+    name: "Vendors",
+    type: "vendor",
+    x: 440,
+    y: 20,
+    width: 120,
+    height: 60,
+    color: "#06b6d4",
+    features: ["Sponsor booths", "Merch", "Stalls"],
+  },
+
+  // Left — Exhibition (top)
+  {
+    id: "exhibition-left-top",
+    name: "Exhibition",
+    type: "booth",
+    x: 20,
+    y: 100,
+    width: 140,
+    height: 80,
+    color: "#FDB913",
+    features: ["Displays", "Demos"],
+  },
+
+  // Left — Exhibition (bottom)
+  {
+    id: "exhibition-left-bottom",
+    name: "Exhibition",
+    type: "booth",
+    x: 20,
+    y: 200,
+    width: 140,
+    height: 80,
+    color: "#FDB913",
+    features: ["Multiple exhibitors"],
+  },
+
+  // Right — Exhibition (top) - ADJUSTED POSITION
+  {
+    id: "exhibition-right-top",
+    name: "Exhibition",
+    type: "booth",
+    x: 340,
+    y: 100,
+    width: 220,
+    height: 80,
+    color: "#FDB913",
+    features: ["Partners", "Demos"],
+  },
+
+  // Right — Exhibition (bottom) - ADJUSTED POSITION
+  {
+    id: "exhibition-right-bottom",
+    name: "Exhibition",
+    type: "booth",
+    x: 340,
+    y: 200,
+    width: 220,
+    height: 80,
+    color: "#FDB913",
+    features: ["Partner showcases"],
+  },
+
+  // Center - Main Walkway - NARROWER WIDTH
+  {
+    id: "walkway",
+    name: "Walkway",
+    type: "walkway",
+    x: 180,
+    y: 90,
+    width: 140,
+    height: 200,
+    color: "#E5E7EB",
+  },
+
+  // Bottom Left - Poster area - BETTER SPACING
+  {
+    id: "posters",
+    name: "Posters",
+    type: "poster",
+    x: 20,
+    y: 300,
+    width: 140,
+    height: 50,
+    color: "#fff7ed",
+    features: ["Research Boards", "Presentations"],
+  },
+
+  // Bottom Right - VIP Section - BETTER SPACING
+  {
+    id: "vip",
+    name: "VIP",
+    type: "vip",
+    x: 420,
+    y: 300,
+    width: 140,
+    height: 50,
+    color: "#fff1f2",
+    features: ["Reserved seating", "VIP access"],
+  },
+
+  // Bottom Center - Main Hall - MORE HEIGHT
+  {
+    id: "main-hall",
+    name: "Main Hall",
+    type: "mainhall",
+    x: 180,
+    y: 305,
+    width: 220,
+    height: 90,
+    color: "#00A651",
+    features: ["Main Screen", "Audio System", "Stage"],
+    currentActivity: "Conference Sessions",
+  },
+
+  // Bottom left — Toilets/Exits - REPOSITIONED
+  {
+    id: "toilets",
+    name: "Toilets",
+    type: "toilet",
+    x: 20,
+    y: 365,
+    width: 140,
+    height: 30,
+    color: "#6b7280",
+    features: ["Restrooms", "Emergency exit"],
   },
 ];
 
 const getIcon = (type: BoothSpace["type"]) => {
   switch (type) {
     case "stage":
+    case "mainhall":
       return Presentation;
     case "booth":
       return Users;
@@ -134,6 +206,16 @@ const getIcon = (type: BoothSpace["type"]) => {
       return Coffee;
     case "registration":
       return Info;
+    case "walkway":
+      return MapPin;
+    case "vip":
+      return Star;
+    case "poster":
+      return MapPin;
+    case "vendor":
+      return MapPin;
+    case "toilet":
+      return Users;
     default:
       return Info;
   }
@@ -156,10 +238,10 @@ export default function Venue3DMap() {
   };
 
   return (
-    <div className="relative">
+    <div className="relative h-full flex flex-col">
       {/* Controls */}
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-foreground">3D Venue Layout</h3>
+      <div className="flex items-center justify-between mb-4 flex-shrink-0">
+        <h3 className="text-lg font-bold text-foreground">ICAIR Venue</h3>
         <div className="flex gap-2">
           <motion.button
             whileTap={{ scale: 0.9 }}
@@ -192,11 +274,11 @@ export default function Venue3DMap() {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="relative w-full bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border-2 border-primary/20 p-4 overflow-hidden shadow-lg"
+        className="relative w-full flex-1 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border-2 border-primary/20 p-4 overflow-hidden shadow-lg flex flex-col min-h-0"
       >
         {/* Perspective container for 3D effect */}
         <div
-          className="overflow-auto max-h-[500px] rounded-lg"
+          className="flex-1 overflow-auto rounded-lg"
           style={{ perspective: "1000px" }}
         >
           <motion.div
@@ -209,7 +291,7 @@ export default function Venue3DMap() {
             className="relative mx-auto"
           >
             <svg
-              viewBox="0 0 580 260"
+              viewBox="0 0 580 410"
               className="w-full h-auto"
               style={{ minWidth: "580px" }}
             >
@@ -242,35 +324,41 @@ export default function Venue3DMap() {
 
               <rect
                 width="580"
-                height="260"
+                height="410"
                 fill="url(#floorGrad)"
                 stroke="#D1D5DB"
                 strokeWidth="2"
               />
-              <rect width="580" height="260" fill="url(#grid)" opacity="0.5" />
+              <rect width="580" height="410" fill="url(#grid)" opacity="0.5" />
 
               {/* Venue Spaces */}
               {venueSpaces.map((space) => {
                 const Icon = getIcon(space.type);
                 const isSelected = selectedSpace?.id === space.id;
+                const isWalkway = space.type === "walkway";
 
                 return (
                   <motion.g
                     key={space.id}
-                    whileHover={{ opacity: 1 }}
-                    style={{ cursor: "pointer", opacity: 0.9 }}
-                    onClick={() => setSelectedSpace(space)}
+                    whileHover={{ opacity: isWalkway ? 0.6 : 1 }}
+                    style={{
+                      cursor: isWalkway ? "default" : "pointer",
+                      opacity: isWalkway ? 0.3 : 0.95,
+                    }}
+                    onClick={() => !isWalkway && setSelectedSpace(space)}
                   >
                     {/* 3D effect - shadow/depth */}
-                    <rect
-                      x={space.x + 4}
-                      y={space.y + 4}
-                      width={space.width}
-                      height={space.height}
-                      fill="#000000"
-                      opacity="0.15"
-                      rx="4"
-                    />
+                    {!isWalkway && (
+                      <rect
+                        x={space.x + 4}
+                        y={space.y + 4}
+                        width={space.width}
+                        height={space.height}
+                        fill="#000000"
+                        opacity="0.12"
+                        rx="6"
+                      />
+                    )}
 
                     {/* Main space */}
                     <motion.rect
@@ -279,14 +367,21 @@ export default function Venue3DMap() {
                       width={space.width}
                       height={space.height}
                       fill={space.color}
-                      stroke={isSelected ? "#00A651" : "#9CA3AF"}
-                      strokeWidth={isSelected ? "3" : "2"}
-                      rx="4"
-                      opacity={isSelected ? 1 : 0.85}
+                      stroke={
+                        isSelected
+                          ? "#00A651"
+                          : isWalkway
+                          ? "#9CA3AF"
+                          : "#9CA3AF"
+                      }
+                      strokeWidth={isSelected ? "3" : isWalkway ? "1" : "2"}
+                      strokeDasharray={isWalkway ? "5,5" : "0"}
+                      rx="8"
+                      opacity={isSelected ? 1 : isWalkway ? 0.35 : 0.95}
                       animate={
                         space.currentActivity
                           ? {
-                              opacity: [0.85, 1, 0.85],
+                              opacity: [0.9, 1, 0.9],
                             }
                           : {}
                       }
@@ -296,50 +391,68 @@ export default function Venue3DMap() {
                       }}
                     />
 
-                    {/* Icon */}
-                    <foreignObject
-                      x={space.x + space.width / 2 - 12}
-                      y={space.y + 10}
-                      width="24"
-                      height="24"
-                    >
-                      <div className="flex items-center justify-center text-white">
-                        <Icon size={20} />
-                      </div>
-                    </foreignObject>
+                    {/* Icon - only for non-walkway spaces */}
+                    {!isWalkway && (
+                      <foreignObject
+                        x={space.x + space.width / 2 - 14}
+                        y={space.y + 8}
+                        width="28"
+                        height="28"
+                      >
+                        <div className="flex items-center justify-center text-white drop-shadow-lg">
+                          <Icon size={22} strokeWidth={2.5} />
+                        </div>
+                      </foreignObject>
+                    )}
 
-                    {/* Label */}
+                    {/* Label - IMPROVED READABILITY */}
                     <text
                       x={space.x + space.width / 2}
-                      y={space.y + space.height / 2 + 5}
+                      y={space.y + space.height / 2 + 8}
                       textAnchor="middle"
-                      className="text-xs font-bold fill-white"
-                      style={{ pointerEvents: "none" }}
+                      className={`font-bold drop-shadow ${
+                        isWalkway
+                          ? "fill-gray-400 text-xs"
+                          : "fill-white text-sm"
+                      }`}
+                      style={{
+                        pointerEvents: "none",
+                        paintOrder: "stroke fill",
+                        stroke: isWalkway ? "none" : "rgba(0,0,0,0.3)",
+                        strokeWidth: isWalkway ? "0" : "0.5px",
+                      }}
                     >
                       {space.name}
                     </text>
 
                     {/* Capacity or Activity indicator */}
-                    <text
-                      x={space.x + space.width / 2}
-                      y={space.y + space.height - 15}
-                      textAnchor="middle"
-                      className="text-xs fill-white/80"
-                      style={{ pointerEvents: "none" }}
-                    >
-                      {space.capacity
-                        ? `${space.capacity} seats`
-                        : space.currentActivity
-                        ? "🔴 LIVE"
-                        : ""}
-                    </text>
+                    {!isWalkway && space.height > 45 && (
+                      <text
+                        x={space.x + space.width / 2}
+                        y={space.y + space.height - 14}
+                        textAnchor="middle"
+                        className="text-[10px] fill-white/90 font-semibold drop-shadow"
+                        style={{
+                          pointerEvents: "none",
+                          paintOrder: "stroke fill",
+                          stroke: "rgba(0,0,0,0.3)",
+                          strokeWidth: "0.5px",
+                        }}
+                      >
+                        {space.capacity
+                          ? `${space.capacity} seats`
+                          : space.currentActivity
+                          ? "🔴 LIVE"
+                          : ""}
+                      </text>
+                    )}
 
                     {/* Pulse effect for active spaces */}
                     {space.currentActivity && (
                       <motion.circle
-                        cx={space.x + space.width - 15}
-                        cy={space.y + 15}
-                        r="5"
+                        cx={space.x + space.width - 18}
+                        cy={space.y + 16}
+                        r="6"
                         fill="#EF4444"
                         animate={{
                           scale: [1, 1.5, 1],
@@ -355,52 +468,55 @@ export default function Venue3DMap() {
                 );
               })}
 
-              {/* Entrance/Exit markers */}
+              {/* Entrance marker (top left near registration) */}
               <g>
-                <rect
+                {/* <rect
                   x="5"
-                  y="110"
+                  y="30"
                   width="8"
                   height="40"
                   fill="#10B981"
                   rx="2"
-                />
+                /> */}
                 <text
-                  x="15"
-                  y="135"
-                  className="text-xs fill-green-600 font-bold"
-                  transform="rotate(-90 15 135)"
+                  x="-15"
+                  y="55"
+                  className="text-[4px] fill-green-600 font-bold"
+                  transform="rotate(-90 15 55)"
                 >
-                  ENTRANCE
+                  Entrance
                 </text>
               </g>
 
+              {/* Exit marker (bottom left near toilets) */}
               <g>
-                <rect
-                  x="567"
-                  y="110"
+                {/* <rect
+                  x="5"
+                  y="365"
                   width="8"
-                  height="40"
+                  height="30"
                   fill="#EF4444"
                   rx="2"
-                />
+                /> */}
                 <text
-                  x="565"
-                  y="135"
-                  className="text-xs fill-red-600 font-bold"
-                  transform="rotate(90 565 135)"
+                  x="15"
+                  y="382"
+                  className="text-[10px] fill-red-600 font-bold"
+                  transform="rotate(-90 15 382)"
                 >
                   EXIT
                 </text>
               </g>
 
-              {/* WiFi Zone indicator */}
-              <circle cx="290" cy="180" r="30" fill="#10B981" opacity="0.1" />
-              <foreignObject x="278" y="168" width="24" height="24">
-                <div className="text-green-600">
-                  <Wifi size={24} />
-                </div>
-              </foreignObject>
+              {/* VIP Zone indicator */}
+              <g>
+                <circle cx={490} cy={325} r={18} fill="#FEE2E2" opacity={0.6} />
+                <foreignObject x={483} y={313} width={26} height={26}>
+                  <div className="text-pink-600">
+                    <Star size={18} />
+                  </div>
+                </foreignObject>
+              </g>
             </svg>
           </motion.div>
         </div>
@@ -410,21 +526,25 @@ export default function Venue3DMap() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="mt-4 flex flex-wrap gap-3 text-xs"
+          className="mt-3 flex flex-wrap gap-2 text-[10px] flex-shrink-0"
         >
           {[
-            { color: "#00A651", label: "Stage" },
-            { color: "#FDB913", label: "Booths" },
-            { color: "#3B82F6", label: "Seating" },
-            { color: "#F59E0B", label: "Refreshments" },
+            { color: "#00A651", label: "Main Hall" },
+            { color: "#FDB913", label: "Exhibition" },
+            { color: "#fff1f2", label: "VIP" },
             { color: "#EF4444", label: "Registration" },
+            { color: "#fff7ed", label: "Posters" },
+            { color: "#06b6d4", label: "Vendors" },
+            { color: "#6b7280", label: "Toilets" },
           ].map((item) => (
-            <div key={item.label} className="flex items-center gap-2">
+            <div key={item.label} className="flex items-center gap-1.5">
               <div
-                className="w-3 h-3 rounded"
+                className="w-2.5 h-2.5 rounded"
                 style={{ backgroundColor: item.color }}
               />
-              <span className="text-muted-foreground">{item.label}</span>
+              <span className="text-muted-foreground font-medium">
+                {item.label}
+              </span>
             </div>
           ))}
         </motion.div>
@@ -437,7 +557,7 @@ export default function Venue3DMap() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4 pb-24"
             onClick={() => setSelectedSpace(null)}
           >
             <motion.div
@@ -508,7 +628,7 @@ export default function Venue3DMap() {
               )}
 
               {/* Capacity */}
-              {selectedSpace.capacity && (
+              {selectedSpace.capacity && selectedSpace.capacity > 0 && (
                 <div className="bg-secondary/10 border border-secondary/30 rounded-lg p-3 mb-4">
                   <p className="text-sm text-muted-foreground">
                     <span className="font-semibold text-foreground">
@@ -554,19 +674,14 @@ export default function Venue3DMap() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="mt-4 bg-secondary/10 border border-secondary/30 rounded-lg p-4"
+        className="mt-3 bg-secondary/10 border border-secondary/30 rounded-lg p-3 flex-shrink-0"
       >
-        <div className="flex items-start gap-3">
-          <Info size={18} className="text-secondary shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">
-                Interactive Controls:
-              </span>{" "}
-              Zoom, rotate, and click on any space to view details. Red pulsing
-              indicators show live activities.
-            </p>
-          </div>
+        <div className="flex items-start gap-2">
+          <Info size={16} className="text-secondary shrink-0 mt-0.5" />
+          <p className="text-xs text-muted-foreground">
+            <span className="font-semibold text-foreground">Tap spaces</span> to
+            view details. Use zoom and rotate controls above.
+          </p>
         </div>
       </motion.div>
     </div>

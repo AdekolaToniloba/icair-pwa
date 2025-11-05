@@ -1,4 +1,4 @@
-const CACHE_NAME = `icair-companion-v6-${new Date().toISOString().split('T')[0]}`
+const CACHE_NAME = `icair-companion-v7-${new Date().toISOString().split('T')[0]}`
 
 const PAGES_TO_CACHE = [
   "/",
