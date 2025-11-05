@@ -1,94 +1,77 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState, memo } from "react";
-import { Calendar, Clock } from "lucide-react";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { Calendar, Zap, Radio, ChevronDown } from "lucide-react";
 
 interface CountdownProps {
   targetDate: Date;
 }
 
-interface TimeUnit {
-  value: number;
-  label: string;
-}
+export function CountdownTimer({ targetDate }: CountdownProps) {
+  const [mounted, setMounted] = useState(false);
 
-// Memoized time unit component that only re-renders when its value changes
-const TimeUnitDisplay = memo(
-  ({
-    value,
-    label,
-    index,
-  }: {
-    value: number;
-    label: string;
-    index: number;
-  }) => {
-    // Different animation variants for each unit to add character
-    const containerVariants = {
-      hidden: { scale: 0.8, opacity: 0 },
-      visible: {
-        scale: 1,
-        opacity: 1,
-        transition: {
-          delay: index * 0.1,
-          duration: 0.5,
-          ease: "easeOut",
-        },
-      },
-    };
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-    // Floating animation with different delays for each unit
-    const floatVariants = {
-      float: {
-        y: [-2, 2, -2],
-        transition: {
-          duration: 2 + index * 0.3, // Different duration for each unit
-          repeat: Infinity,
-          ease: "easeInOut",
-        },
-      },
-    };
-
-    // Pulse animation for the changing value
-    const pulseVariants = {
-      initial: { scale: 1 },
-      pulse: {
-        scale: [1, 1.15, 1],
-        transition: {
-          duration: 0.3,
-          ease: "easeOut",
-        },
-      },
-    };
-
+  // Prevent hydration mismatch
+  if (!mounted) {
     return (
+      <div className="flex items-center justify-center py-12">
+        <div className="bg-muted rounded-2xl p-8 w-full max-w-md h-40 animate-pulse" />
+      </div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.6 }}
+      className="w-full py-8 px-4"
+    >
+      {/* Main Day 2 Badge - Centerpiece */}
       <motion.div
-        className="flex flex-col items-center relative"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
+        className="relative max-w-md mx-auto"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.7 }}
       >
-        {/* Background glow effect */}
+        {/* Outer glow ring */}
         <motion.div
-          className="absolute inset-0 bg-primary/20 rounded-xl blur-xl"
+          className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary rounded-3xl blur-2xl"
           animate={{
             opacity: [0.3, 0.6, 0.3],
-            scale: [0.9, 1.1, 0.9],
+            scale: [0.95, 1.05, 0.95],
           }}
           transition={{
-            duration: 3 + index * 0.5,
+            duration: 3,
             repeat: Infinity,
             ease: "easeInOut",
           }}
         />
 
-        {/* Main time display */}
-        <motion.div
-          className="relative bg-gradient-to-br from-primary via-primary to-primary/80 rounded-xl p-2.5 sm:p-4 min-w-[60px] sm:min-w-[70px] text-center shadow-lg border border-primary/20 overflow-hidden"
-          variants={floatVariants}
-          animate="float"
-        >
+        {/* Main card */}
+        <div className="relative bg-gradient-to-br from-primary via-primary to-primary/90 rounded-3xl p-8 sm:p-10 shadow-2xl border-2 border-primary/30 overflow-hidden">
+          {/* Animated background pattern */}
+          <motion.div
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage: `radial-gradient(circle at 20px 20px, white 2px, transparent 0)`,
+              backgroundSize: "40px 40px",
+            }}
+            animate={{
+              x: [0, 40],
+              y: [0, 40],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          />
+
           {/* Shine effect */}
           <motion.div
             className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
@@ -98,210 +81,237 @@ const TimeUnitDisplay = memo(
             transition={{
               duration: 3,
               repeat: Infinity,
-              repeatDelay: 2 + index,
-              ease: "linear",
+              repeatDelay: 2,
+              ease: "easeInOut",
             }}
           />
 
-          {/* Animated number with flip effect */}
-          <AnimatePresence mode="wait">
+          {/* Content */}
+          <div className="relative z-10 flex flex-col items-center gap-6">
+            {/* Top icon row */}
             <motion.div
-              key={value} // Key changes trigger animation only when value changes
-              variants={pulseVariants}
-              initial="initial"
-              animate="pulse"
-              exit={{
-                scale: 0.8,
-                opacity: 0,
-                rotateX: 90,
-                transition: { duration: 0.2 },
-              }}
-              className="relative z-10"
+              className="flex items-center gap-4"
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
             >
-              <span className="text-white font-bold text-2xl sm:text-3xl md:text-4xl tabular-nums tracking-tight drop-shadow-lg">
-                {String(value).padStart(2, "0")}
-              </span>
+              <motion.div
+                animate={{
+                  rotate: [0, 360],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+              >
+                <Zap
+                  className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-300"
+                  fill="currentColor"
+                />
+              </motion.div>
+
+              <motion.div
+                animate={{
+                  scale: [1, 1.2, 1],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                <Calendar className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+              </motion.div>
+
+              <motion.div
+                animate={{
+                  rotate: [0, -360],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+              >
+                <Zap
+                  className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-300"
+                  fill="currentColor"
+                />
+              </motion.div>
             </motion.div>
-          </AnimatePresence>
 
-          {/* Decorative dots */}
-          <div className="absolute top-1 right-1 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white/30 rounded-full" />
-          <div className="absolute bottom-1 left-1 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white/30 rounded-full" />
-        </motion.div>
+            {/* Main text */}
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+            >
+              <motion.h2
+                className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-2 tracking-tight"
+                animate={{
+                  textShadow: [
+                    "0 0 20px rgba(255,255,255,0.3)",
+                    "0 0 30px rgba(255,255,255,0.5)",
+                    "0 0 20px rgba(255,255,255,0.3)",
+                  ],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                DAY 2
+              </motion.h2>
+              <motion.div
+                className="flex items-center justify-center gap-3 mt-4"
+                animate={{
+                  scale: [1, 1.05, 1],
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                <motion.div
+                  className="relative"
+                  animate={{
+                    scale: [1, 1.3, 1],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                >
+                  <div className="w-3 h-3 bg-red-500 rounded-full" />
+                  <motion.div
+                    className="absolute inset-0 bg-red-500 rounded-full"
+                    animate={{
+                      scale: [1, 2, 1],
+                      opacity: [1, 0, 1],
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "easeOut",
+                    }}
+                  />
+                </motion.div>
+                <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-white uppercase tracking-wider">
+                  Live Now
+                </span>
+              </motion.div>
+            </motion.div>
 
-        {/* Label with gradient text */}
-        <motion.p
-          className="text-xs sm:text-sm font-bold mt-2 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-white uppercase tracking-wide"
-          animate={{
-            opacity: [0.7, 1, 0.7],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            delay: index * 0.2,
-          }}
-        >
-          {label}
-        </motion.p>
-      </motion.div>
-    );
-  },
-  (prevProps, nextProps) => {
-    // Only re-render if value changes
-    return prevProps.value === nextProps.value;
-  }
-);
+            {/* Broadcasting indicator - Clickable Link to Schedule */}
+            <motion.a
+              href="/schedule?day=2"
+              className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-5 py-2.5 border border-white/30 cursor-pointer hover:bg-white/30 transition-colors"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7, duration: 0.5 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <motion.div
+                animate={{
+                  rotate: [0, 360],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+              >
+                <Radio className="w-4 h-4 text-white" />
+              </motion.div>
+              <span className="text-sm sm:text-base font-semibold text-white">
+                Exciting Sessions Happening Now
+              </span>
+              <motion.div
+                animate={{
+                  x: [0, 4, 0],
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                <ChevronDown className="w-4 h-4 text-white rotate-[-90deg]" />
+              </motion.div>
+            </motion.a>
 
-TimeUnitDisplay.displayName = "TimeUnitDisplay";
-
-export function CountdownTimer({ targetDate }: CountdownProps) {
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
-
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-
-    const calculateTimeLeft = () => {
-      const now = new Date().getTime();
-      const target = targetDate.getTime();
-      const difference = target - now;
-
-      if (difference > 0) {
-        const newTimeLeft = {
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
-          seconds: Math.floor((difference / 1000) % 60),
-        };
-
-        // Only update if values actually changed
-        setTimeLeft((prev) => {
-          if (
-            prev.days !== newTimeLeft.days ||
-            prev.hours !== newTimeLeft.hours ||
-            prev.minutes !== newTimeLeft.minutes ||
-            prev.seconds !== newTimeLeft.seconds
-          ) {
-            return newTimeLeft;
-          }
-          return prev;
-        });
-      } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-      }
-    };
-
-    calculateTimeLeft();
-    const timer = setInterval(calculateTimeLeft, 1000);
-
-    return () => clearInterval(timer);
-  }, [targetDate]);
-
-  // Prevent hydration mismatch
-  if (!mounted) {
-    return (
-      <div className="flex justify-between gap-3 sm:gap-4">
-        {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="flex flex-col items-center">
-            <div className="bg-muted rounded-xl p-4 min-w-[70px] h-[72px] animate-pulse" />
-            <div className="h-4 w-12 bg-muted rounded mt-2 animate-pulse" />
+            {/* Decorative bottom dots */}
+            <motion.div
+              className="flex items-center gap-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.9 }}
+            >
+              {[0, 1, 2, 3, 4].map((i) => (
+                <motion.div
+                  key={i}
+                  className="w-2 h-2 rounded-full bg-white/60"
+                  animate={{
+                    scale: [1, 1.5, 1],
+                    opacity: [0.6, 1, 0.6],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    delay: i * 0.2,
+                  }}
+                />
+              ))}
+            </motion.div>
           </div>
-        ))}
-      </div>
-    );
-  }
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="w-full"
-    >
-      {/* Header with icon */}
-      <motion.div
-        className="flex items-center justify-center gap-2 mb-6"
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-      >
-        <motion.div
-          animate={{
-            rotate: [0, 5, -5, 0],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            repeatDelay: 3,
-          }}
-        >
-          <Calendar className="w-5 h-5 text-white" />
-        </motion.div>
-        <h3 className="text-sm sm:text-base font-bold text-foreground uppercase tracking-wide">
-          Conference Starts In
-        </h3>
-        <motion.div
-          animate={{
-            rotate: [0, -5, 5, 0],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            repeatDelay: 3,
-            delay: 0.5,
-          }}
-        >
-          <Clock className="w-5 h-5 text-white" />
-        </motion.div>
+          {/* Corner decorations */}
+          <div className="absolute top-3 right-3 w-3 h-3 bg-white/40 rounded-full" />
+          <div className="absolute bottom-3 left-3 w-3 h-3 bg-white/40 rounded-full" />
+          <div className="absolute top-3 left-3 w-2 h-2 bg-yellow-300/60 rounded-full" />
+          <div className="absolute bottom-3 right-3 w-2 h-2 bg-yellow-300/60 rounded-full" />
+        </div>
       </motion.div>
 
-      {/* Countdown units */}
-      <div className="flex justify-between gap-2 sm:gap-3 md:gap-4 max-w-lg mx-auto">
-        <TimeUnitDisplay value={timeLeft.days} label="Days" index={0} />
-        <TimeUnitDisplay value={timeLeft.hours} label="Hours" index={1} />
-        <TimeUnitDisplay value={timeLeft.minutes} label="Mins" index={2} />
-        <TimeUnitDisplay value={timeLeft.seconds} label="Secs" index={3} />
-      </div>
-
-      {/* Decorative elements */}
-      <motion.div
-        className="flex items-center justify-center gap-2 mt-6"
+      {/* Supporting text */}
+      <motion.p
+        className="text-center text-sm sm:text-base text-muted-foreground mt-6 font-medium max-w-md mx-auto"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
+        transition={{ delay: 1.1 }}
+      >
+        Don't miss out on today's keynotes, panels, and networking opportunities
+      </motion.p>
+
+      {/* Animated bottom accent */}
+      <motion.div
+        className="flex items-center justify-center gap-2 mt-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.3 }}
       >
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}
             className="w-1.5 h-1.5 rounded-full bg-primary"
             animate={{
-              scale: [1, 1.5, 1],
-              opacity: [0.5, 1, 0.5],
+              y: [0, -8, 0],
             }}
             transition={{
               duration: 1.5,
               repeat: Infinity,
-              delay: i * 0.3,
+              delay: i * 0.2,
+              ease: "easeInOut",
             }}
           />
         ))}
       </motion.div>
-
-      {/* Date display */}
-      {/* <motion.p
-        className="text-center text-xs sm:text-sm text-white mt-4 font-medium"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
-      >
-        Tuesday, November 4, 2025 • 9:00 AM WAT
-      </motion.p> */}
     </motion.div>
   );
 }

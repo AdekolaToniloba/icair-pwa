@@ -149,7 +149,16 @@ export default function SchedulePage() {
     "agenda"
   );
   const [selectedDay, setSelectedDay] = useState<"Day 1" | "Day 2" | "Day 3">(
-    "Day 1"
+    () => {
+      // Check URL parameters on mount
+      if (typeof window !== "undefined") {
+        const params = new URLSearchParams(window.location.search);
+        const dayParam = params.get("day");
+        if (dayParam === "2") return "Day 2";
+        if (dayParam === "3") return "Day 3";
+      }
+      return "Day 1";
+    }
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<string | null>(null);
