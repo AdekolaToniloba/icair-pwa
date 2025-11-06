@@ -163,7 +163,7 @@ export function CountdownTimer({ targetDate }: CountdownProps) {
                   ease: "easeInOut",
                 }}
               >
-                DAY 2
+                DAY 3
               </motion.h2>
               <motion.div
                 className="flex items-center justify-center gap-3 mt-4"
